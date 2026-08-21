@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { signOut } from '@/app/dashboard/actions';
+import { TrendChart, StarsDisplay } from '@/lib/trend-chart';
 
 export default async function ParentPage() {
   const supabase = createClient();
@@ -39,6 +40,10 @@ export default async function ParentPage() {
     .eq('student_id', profile.student_id)
     .order('created_at', { ascending: true });
 
+  const topicsDone = (topics || []).filter((t) => t.done).length;
+  const topicsTotal = (topics || []).length;
+  const topicsPercent = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;
+
   return (
     <div className="shell">
       <div className="masthead">
@@ -60,6 +65,7 @@ export default async function ParentPage() {
                 <th>Дата</th>
                 <th>Тема</th>
                 <th>Поведение</th>
+                <th>Работа на уроке</th>
                 <th>ДЗ</th>
                 {profile.show_payment && <th>Оплата</th>}
               </tr>
@@ -74,7 +80,18 @@ export default async function ParentPage() {
                       {l.topic}
                       {l.behavior_comment && <div className="muted">{l.behavior_comment}</div>}
                     </td>
-                    <td>{l.behavior && <span className="tag tag-neutral">{l.behavior}</span>}</td>
+                    <td>
+                      {l.behavior_rating ? (
+                        <StarsDisplay value={l.behavior_rating} />
+                      ) : l.behavior ? (
+                        <span className="tag tag-neutral">{l.behavior}</span>
+                      ) : (
+                        <span className="muted">—</span>
+                      )}
+                    </td>
+                    <td>
+                      <StarsDisplay value={l.work_rating} />
+                    </td>
                     <td>
                       {l.homework_done ? (
                         <span className="check">✓ выполнено</span>
@@ -107,14 +124,38 @@ export default async function ParentPage() {
       </div>
 
       <div className="card">
-        <div className="card-title">Что нужно подтянуть</div>
-        {topics && topics.length > 0 ? (
-          topics.map((t) => (
-            <div key={t.id} className={`checkbox-row ${t.done ? 'done' : ''}`}>
-              <span style={{ width: 18 }}>{t.done ? <span className="check">✓</span> : '·'}</span>
-              <span>{t.topic}</span>
+        <div className="card-title">Динамика по урокам</div>
+        <TrendChart lessons={lessons || []} />
+      </div>
+
+      <div className="card">
+        <div className="card-title">Темы 📚</div>
+
+        {topicsTotal > 0 && (
+          <div className="topics-progress">
+            <div className="topics-progress-bar">
+              <div className="topics-progress-fill" style={{ width: `${topicsPercent}%` }} />
             </div>
-          ))
+            <span className="muted">
+              Пройдено {topicsDone} из {topicsTotal} ({topicsPercent}%)
+            </span>
+          </div>
+        )}
+
+        {topics && topics.length > 0 ? (
+          <div className="topic-chips">
+            {topics.map((t) => (
+              <span
+                key={t.id}
+                className={`topic-chip topic-chip-static ${
+                  t.done ? 'topic-chip-done' : 'topic-chip-pending'
+                }`}
+              >
+                <span className="topic-chip-icon">{t.done ? '✅' : '📌'}</span>
+                {t.topic}
+              </span>
+            ))}
+          </div>
         ) : (
           <p className="muted">Список пуст.</p>
         )}
