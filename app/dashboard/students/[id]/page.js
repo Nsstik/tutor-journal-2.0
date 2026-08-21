@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { TrendChart, StarsDisplay, StarInput } from '@/lib/trend-chart';
 import {
   addLesson,
   togglePaid,
@@ -8,15 +9,8 @@ import {
   createParentAccount,
   updateParentPayment,
   removeParentAccess,
+  deleteStudent,
 } from './actions';
-
-const BEHAVIOR_OPTIONS = [
-  'активно работал',
-  'отвлекался',
-  'устал',
-  'не был готов',
-  'без замечаний',
-];
 
 export default async function StudentPage({ params, searchParams }) {
   const studentId = params.id;
@@ -63,6 +57,11 @@ export default async function StudentPage({ params, searchParams }) {
   const createParentAction = createParentAccount.bind(null, studentId);
   const updateParentPaymentAction = updateParentPayment.bind(null, studentId);
   const removeParentAction = removeParentAccess.bind(null, studentId);
+  const deleteStudentAction = deleteStudent.bind(null, studentId);
+
+  const topicsDone = (topics || []).filter((t) => t.done).length;
+  const topicsTotal = (topics || []).length;
+  const topicsPercent = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;
 
   return (
     <div className="shell">
@@ -102,6 +101,7 @@ export default async function StudentPage({ params, searchParams }) {
                 <th>Дата</th>
                 <th>Тема</th>
                 <th>Поведение</th>
+                <th>Работа на уроке</th>
                 <th>ДЗ</th>
                 <th>Оплата</th>
               </tr>
@@ -119,7 +119,16 @@ export default async function StudentPage({ params, searchParams }) {
                       )}
                     </td>
                     <td>
-                      {l.behavior && <span className="tag tag-neutral">{l.behavior}</span>}
+                      {l.behavior_rating ? (
+                        <StarsDisplay value={l.behavior_rating} />
+                      ) : l.behavior ? (
+                        <span className="tag tag-neutral">{l.behavior}</span>
+                      ) : (
+                        <span className="muted">—</span>
+                      )}
+                    </td>
+                    <td>
+                      <StarsDisplay value={l.work_rating} />
                     </td>
                     <td>
                       <form action={toggleHomeworkAction}>
@@ -177,6 +186,12 @@ export default async function StudentPage({ params, searchParams }) {
         )}
       </div>
 
+      {/* ------------------- ГРАФИК ДИНАМИКИ ------------------- */}
+      <div className="card">
+        <div className="card-title">Динамика по урокам</div>
+        <TrendChart lessons={lessons || []} />
+      </div>
+
       {/* ------------------- ДОБАВИТЬ УРОК ------------------- */}
       <div className="card">
         <div className="card-title">Добавить урок</div>
@@ -194,16 +209,17 @@ export default async function StudentPage({ params, searchParams }) {
 
           <div className="form-row">
             <div className="field">
-              <label htmlFor="behavior">Поведение</label>
-              <select id="behavior" name="behavior">
-                {BEHAVIOR_OPTIONS.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
+              <label>Поведение</label>
+              <StarInput name="behavior_rating" defaultValue={5} />
             </div>
             <div className="field">
+              <label>Работа на уроке</label>
+              <StarInput name="work_rating" defaultValue={5} />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="field" style={{ gridColumn: '1 / -1' }}>
               <label htmlFor="behavior_comment">Комментарий (необязательно)</label>
               <input id="behavior_comment" name="behavior_comment" type="text" />
             </div>
@@ -241,31 +257,42 @@ export default async function StudentPage({ params, searchParams }) {
         </form>
       </div>
 
-      {/* ------------------- ЧТО ПОДТЯНУТЬ ------------------- */}
+      {/* ------------------- ТЕМЫ ------------------- */}
       <div className="card">
-        <div className="card-title">Что нужно подтянуть</div>
+        <div className="card-title">Темы 📚</div>
+
+        {topicsTotal > 0 && (
+          <div className="topics-progress">
+            <div className="topics-progress-bar">
+              <div className="topics-progress-fill" style={{ width: `${topicsPercent}%` }} />
+            </div>
+            <span className="muted">
+              Пройдено {topicsDone} из {topicsTotal} ({topicsPercent}%)
+            </span>
+          </div>
+        )}
+
         {topics && topics.length > 0 ? (
-          topics.map((t) => (
-            <div key={t.id} className={`checkbox-row ${t.done ? 'done' : ''}`}>
-              <form action={toggleTopicAction}>
+          <div className="topic-chips">
+            {topics.map((t) => (
+              <form action={toggleTopicAction} key={t.id}>
                 <input type="hidden" name="topicId" value={t.id} />
                 <input type="hidden" name="nextValue" value={(!t.done).toString()} />
                 <button
                   type="submit"
-                  className="btn-secondary"
-                  style={{ padding: '2px 8px', fontSize: '0.85rem' }}
+                  className={`topic-chip ${t.done ? 'topic-chip-done' : 'topic-chip-pending'}`}
                 >
-                  {t.done ? '✓' : '·'}
+                  <span className="topic-chip-icon">{t.done ? '✅' : '📌'}</span>
+                  {t.topic}
                 </button>
               </form>
-              <span>{t.topic}</span>
-            </div>
-          ))
+            ))}
+          </div>
         ) : (
           <p className="muted">Список пуст.</p>
         )}
 
-        <form action={addTopicAction} style={{ marginTop: 16, display: 'flex', gap: 10 }}>
+        <form action={addTopicAction} style={{ marginTop: 18, display: 'flex', gap: 10 }}>
           <input name="topic" type="text" placeholder="Например: проценты" required />
           <button className="btn-secondary" type="submit">+ Добавить тему</button>
         </form>
@@ -331,6 +358,39 @@ export default async function StudentPage({ params, searchParams }) {
           </div>
           <button className="btn" type="submit">Создать доступ</button>
         </form>
+      </div>
+
+      {/* ------------------- УДАЛЕНИЕ УЧЕНИКА ------------------- */}
+      <div className="card card-danger">
+        <div className="card-title">Опасная зона</div>
+        {searchParams?.confirmDelete ? (
+          <>
+            <p>
+              Точно удалить ученика <strong>{student.full_name}</strong>? Все его уроки, темы и
+              история оценок будут удалены безвозвратно. Это действие нельзя отменить.
+            </p>
+            <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+              <form action={deleteStudentAction}>
+                <button type="submit" className="btn-danger">Да, удалить навсегда</button>
+              </form>
+              <a
+                href={`/dashboard/students/${studentId}`}
+                className="btn-secondary"
+                style={{ textDecoration: 'none' }}
+              >
+                Отмена
+              </a>
+            </div>
+          </>
+        ) : (
+          <a
+            href={`/dashboard/students/${studentId}?confirmDelete=1`}
+            className="btn-danger"
+            style={{ textDecoration: 'none', display: 'inline-block' }}
+          >
+            Удалить ученика
+          </a>
+        )}
       </div>
     </div>
   );
