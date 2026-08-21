@@ -38,31 +38,41 @@ export async function middleware(request) {
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthPage) {
+  if (user && (isAuthPage || isDashboard || isParentArea)) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
-    const url = request.nextUrl.clone();
-    url.pathname = profile?.role === 'parent' ? '/parent' : '/dashboard';
-    return NextResponse.redirect(url);
-  }
+    // Пользователь авторизован, но в таблице profiles для него нет записи
+    // (или роль пустая) — раньше это приводило к бесконечному редиректу
+    // /dashboard -> /parent -> /dashboard. Вместо цикла — выходим из системы
+    // и показываем понятную ошибку на странице входа.
+    if (!profile?.role) {
+      await supabase.auth.signOut();
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
+      url.search = '';
+      url.searchParams.set(
+        'error',
+        'Профиль не найден. Обратитесь к репетитору или напишите разработчику.'
+      );
+      return NextResponse.redirect(url);
+    }
 
-  if (user && (isDashboard || isParentArea)) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+    if (isAuthPage) {
+      const url = request.nextUrl.clone();
+      url.pathname = profile.role === 'parent' ? '/parent' : '/dashboard';
+      return NextResponse.redirect(url);
+    }
 
-    if (isDashboard && profile?.role !== 'repetitor') {
+    if (isDashboard && profile.role !== 'repetitor') {
       const url = request.nextUrl.clone();
       url.pathname = '/parent';
       return NextResponse.redirect(url);
     }
-    if (isParentArea && profile?.role !== 'parent') {
+    if (isParentArea && profile.role !== 'parent') {
       const url = request.nextUrl.clone();
       url.pathname = '/dashboard';
       return NextResponse.redirect(url);
