@@ -26,7 +26,10 @@ export async function addLesson(studentId, formData) {
 
   const lesson_date = formData.get('lesson_date');
   const topic = formData.get('topic');
-  const behavior = formData.get('behavior') || null;
+  const behavior_rating = formData.get('behavior_rating')
+    ? Number(formData.get('behavior_rating'))
+    : null;
+  const work_rating = formData.get('work_rating') ? Number(formData.get('work_rating')) : null;
   const behavior_comment = formData.get('behavior_comment') || null;
   const homework_done = formData.get('homework_done') === 'on';
   const homework_comment = formData.get('homework_comment') || null;
@@ -39,7 +42,8 @@ export async function addLesson(studentId, formData) {
       student_id: studentId,
       lesson_date,
       topic,
-      behavior,
+      behavior_rating,
+      work_rating,
       behavior_comment,
       homework_done,
       homework_comment,
@@ -151,6 +155,21 @@ export async function updateParentPayment(studentId, formData) {
 
   await supabase.from('profiles').update({ show_payment: nextValue }).eq('id', profileId);
   revalidatePath(`/dashboard/students/${studentId}`);
+}
+
+// Полное удаление ученика: вместе с ним каскадно удаляются все его уроки,
+// оплата и список тем (это настроено в базе через "on delete cascade").
+// Доступ родителя не удаляется автоматически — просто перестаёт видеть
+// данные (ссылка на ученика обнуляется); отдельно его можно отозвать через
+// "Отозвать доступ".
+export async function deleteStudent(studentId) {
+  const supabase = createClient();
+  await assertOwnsStudent(supabase, studentId);
+
+  const { error } = await supabase.from('students').delete().eq('id', studentId);
+  if (error) throw error;
+
+  redirect('/dashboard');
 }
 
 export async function removeParentAccess(studentId, formData) {
