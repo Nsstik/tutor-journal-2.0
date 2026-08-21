@@ -342,6 +342,222 @@ label {
   color: var(--ink-soft);
 }
 
+/* ---------- звёздные оценки (ввод) ---------- */
+.star-input {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  gap: 2px;
+}
+
+.star-input input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+}
+
+.star-input label {
+  font-size: 1.9rem;
+  line-height: 1;
+  color: var(--paper-line);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.star-input input:checked ~ label {
+  color: var(--gold);
+}
+
+.star-input label:hover,
+.star-input label:hover ~ label {
+  color: var(--gold);
+}
+
+/* ---------- звёздные оценки (только просмотр) ---------- */
+.stars-display {
+  letter-spacing: 1px;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.stars-filled {
+  color: var(--gold);
+}
+
+.stars-empty {
+  color: var(--paper-line);
+}
+
+/* ---------- график динамики ---------- */
+.chart-wrap {
+  overflow-x: auto;
+}
+
+.trend-chart {
+  width: 100%;
+  height: auto;
+  min-width: 320px;
+  display: block;
+}
+
+.chart-grid {
+  stroke: var(--paper-line);
+  stroke-width: 1;
+}
+
+.chart-axis-label {
+  fill: var(--ink-soft);
+  font-size: 10px;
+  font-family: 'Times New Roman', Times, Georgia, serif;
+}
+
+.chart-line {
+  fill: none;
+  stroke-width: 2.5;
+}
+
+.chart-line-behavior {
+  stroke: var(--gold);
+}
+
+.chart-line-work {
+  stroke: var(--green-ink);
+}
+
+.chart-dot-behavior {
+  fill: var(--gold);
+}
+
+.chart-dot-work {
+  fill: var(--green-ink);
+}
+
+.chart-legend {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot-behavior {
+  background: var(--gold);
+}
+
+.legend-dot-work {
+  background: var(--green-ink);
+}
+
+/* ---------- темы: прогресс-бар и яркие плашки ---------- */
+.topics-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.topics-progress-bar {
+  flex: 1 1 200px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  overflow: hidden;
+}
+
+.topics-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--green-ink));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.topic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.topic-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.1s ease;
+}
+
+.topic-chip:hover {
+  transform: translateY(-1px);
+}
+
+.topic-chip-static {
+  cursor: default;
+}
+
+.topic-chip-static:hover {
+  transform: none;
+}
+
+.topic-chip-pending {
+  background: rgba(169, 130, 47, 0.14);
+  color: var(--gold);
+  border-color: rgba(169, 130, 47, 0.35);
+}
+
+.topic-chip-done {
+  background: rgba(60, 107, 71, 0.14);
+  color: var(--green-ink);
+  border-color: rgba(60, 107, 71, 0.35);
+  text-decoration: line-through;
+}
+
+.topic-chip-icon {
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+/* ---------- опасная зона / удаление ---------- */
+.card-danger {
+  border-color: var(--red-pen);
+}
+
+.card-danger::before {
+  background: var(--red-pen);
+}
+
+.btn-danger {
+  background: var(--red-pen);
+  color: var(--paper);
+  border: none;
+  padding: 9px 20px;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+}
+
+.btn-danger:hover {
+  opacity: 0.85;
+}
+
 @media (max-width: 640px) {
   .shell {
     padding: 24px 14px 60px;
