@@ -187,7 +187,7 @@ export default async function StudentPage({ params, searchParams }) {
       </div>
 
       {/* ------------------- ГРАФИК ДИНАМИКИ ------------------- */}
-      <div className="card">
+      <div className="card card-chart">
         <div className="card-title">Динамика по урокам</div>
         <TrendChart lessons={lessons || []} />
       </div>
