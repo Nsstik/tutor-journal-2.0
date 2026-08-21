@@ -123,7 +123,7 @@ export default async function ParentPage() {
         )}
       </div>
 
-      <div className="card">
+      <div className="card card-chart">
         <div className="card-title">Динамика по урокам</div>
         <TrendChart lessons={lessons || []} />
       </div>
