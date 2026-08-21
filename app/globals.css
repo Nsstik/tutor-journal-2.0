@@ -1,0 +1,363 @@
+/* =========================================================
+   Дизайн-система «Журнал успеваемости»
+   Палитра:
+     --paper:      #F6F3EA  (бумага)
+     --paper-line: #CFC6AD  (линовка)
+     --ink:        #1E2A45  (тёмно-синие чернила)
+     --ink-soft:   #4B5670  (приглушённый текст)
+     --red-pen:    #9C3B2E  (красная паста — предупреждения/долг)
+     --green-ink:  #3C6B47  (зелёная паста — выполнено/оплачено)
+     --gold:       #A9822F  (тонкий акцент — печать/подпись)
+   Шрифт: Times New Roman везде, как в официальном документе.
+   ========================================================= */
+
+:root {
+  --paper: #f6f3ea;
+  --paper-raised: #fbf9f2;
+  --paper-line: #cfc6ad;
+  --ink: #1e2a45;
+  --ink-soft: #4b5670;
+  --red-pen: #9c3b2e;
+  --green-ink: #3c6b47;
+  --gold: #a9822f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Times New Roman', Times, Georgia, serif;
+}
+
+body {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 37px,
+    var(--paper-line) 38px
+  );
+  background-attachment: local;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--ink);
+}
+
+h1, h2, h3, h4 {
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.eyebrow {
+  font-variant: small-caps;
+  letter-spacing: 0.14em;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 3px double var(--ink);
+  padding-bottom: 14px;
+  margin-bottom: 36px;
+}
+
+.masthead h1 {
+  font-size: 1.7rem;
+}
+
+.masthead .subtitle {
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.card {
+  background: var(--paper-raised);
+  border: 1px solid var(--paper-line);
+  padding: 24px 28px;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  width: 3px;
+  background: var(--gold);
+  opacity: 0.55;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--paper-line);
+}
+
+table.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.98rem;
+}
+
+table.ledger th {
+  text-align: left;
+  font-weight: 400;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  border-bottom: 2px solid var(--ink);
+  padding: 6px 10px;
+}
+
+table.ledger td {
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--paper-line);
+  vertical-align: top;
+}
+
+table.ledger tr:hover td {
+  background: rgba(169, 130, 47, 0.06);
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border: 1px solid currentColor;
+  font-size: 0.8rem;
+  border-radius: 2px;
+}
+
+.tag-green {
+  color: var(--green-ink);
+}
+
+.tag-red {
+  color: var(--red-pen);
+}
+
+.tag-neutral {
+  color: var(--ink-soft);
+}
+
+.check {
+  color: var(--green-ink);
+  font-weight: bold;
+}
+
+.cross {
+  color: var(--red-pen);
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.btn {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  padding: 9px 20px;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+}
+
+.btn:hover {
+  background: var(--red-pen);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 8px 18px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  border-color: var(--red-pen);
+  color: var(--red-pen);
+}
+
+input[type='text'],
+input[type='date'],
+input[type='number'],
+input[type='email'],
+input[type='password'],
+textarea,
+select {
+  background: var(--paper);
+  border: none;
+  border-bottom: 1px solid var(--ink-soft);
+  padding: 7px 4px;
+  width: 100%;
+  color: var(--ink);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-bottom: 2px solid var(--red-pen);
+}
+
+label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--paper-line);
+}
+
+.tab {
+  padding: 8px 16px;
+  border: 1px solid var(--paper-line);
+  border-bottom: none;
+  background: var(--paper);
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+  font-size: 0.9rem;
+  position: relative;
+  top: 1px;
+}
+
+.tab.active {
+  background: var(--paper-raised);
+  color: var(--ink);
+  border-bottom: 1px solid var(--paper-raised);
+  font-weight: bold;
+}
+
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid var(--gold);
+  color: var(--gold);
+  padding: 4px 12px;
+  transform: rotate(-3deg);
+  font-variant: small-caps;
+  letter-spacing: 0.1em;
+  font-size: 0.78rem;
+  border-radius: 3px;
+}
+
+.error-text {
+  color: var(--red-pen);
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+.muted {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.top-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.student-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.student-list li {
+  border-bottom: 1px solid var(--paper-line);
+}
+
+.student-list a {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 4px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.student-list a:hover {
+  color: var(--red-pen);
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--paper-line);
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+.checkbox-row.done span {
+  text-decoration: line-through;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding: 24px 14px 60px;
+  }
+  table.ledger, table.ledger thead, table.ledger tbody, table.ledger th, table.ledger td, table.ledger tr {
+    display: block;
+  }
+  table.ledger th {
+    display: none;
+  }
+  table.ledger td {
+    border-bottom: none;
+    padding: 4px 0;
+  }
+  table.ledger tr {
+    border-bottom: 1px solid var(--paper-line);
+    padding: 10px 0;
+  }
+}
