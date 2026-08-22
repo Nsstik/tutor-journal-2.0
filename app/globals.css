@@ -502,6 +502,33 @@ label {
   background: var(--green-ink);
 }
 
+
+/* ---------- график выполнения ДЗ ---------- */
+.hw-chart {
+  margin-top: 4px;
+}
+
+.hw-cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 14px 0 4px;
+}
+
+.hw-cell {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.hw-cell-done {
+  background: var(--green-ink);
+}
+
+.hw-cell-pending {
+  background: var(--red-pen);
+}
+
 /* ---------- темы: прогресс-бар и яркие плашки ---------- */
 .topics-progress {
   display: flex;
