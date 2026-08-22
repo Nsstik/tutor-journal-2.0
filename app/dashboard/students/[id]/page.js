@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
-import { TrendChart, StarsDisplay, StarInput } from '@/lib/trend-chart';
+import { TrendChart, HomeworkChart, StarsDisplay, StarInput } from '@/lib/trend-chart';
 import {
   addLesson,
   togglePaid,
+  updatePayment,
   toggleHomework,
   addTopic,
   addTopicsBulk,
@@ -53,6 +54,7 @@ export default async function StudentPage({ params, searchParams }) {
 
   const addLessonAction = addLesson.bind(null, studentId);
   const togglePaidAction = togglePaid.bind(null, studentId);
+  const updatePaymentAction = updatePayment.bind(null, studentId);
   const toggleHomeworkAction = toggleHomework.bind(null, studentId);
   const addTopicAction = addTopic.bind(null, studentId);
   const addTopicsBulkAction = addTopicsBulk.bind(null, studentId);
@@ -157,23 +159,45 @@ export default async function StudentPage({ params, searchParams }) {
                     </td>
                     <td>
                       {payment ? (
-                        <form action={togglePaidAction}>
+                        <form
+                          action={updatePaymentAction}
+                          style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
+                        >
                           <input type="hidden" name="paymentId" value={payment.id} />
                           <input
-                            type="hidden"
-                            name="nextValue"
-                            value={(!payment.paid).toString()}
+                            type="number"
+                            name="amount"
+                            defaultValue={payment.amount ?? ''}
+                            placeholder="сумма"
+                            style={{ width: 80, padding: '4px 6px', fontSize: '0.85rem' }}
                           />
+                          <label
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              fontVariant: 'normal',
+                              fontSize: '0.85rem',
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              name="paid"
+                              defaultChecked={payment.paid}
+                              style={{ width: 'auto' }}
+                            />
+                            {payment.paid ? (
+                              <span className="check">оплачено</span>
+                            ) : (
+                              <span className="cross">не оплачено</span>
+                            )}
+                          </label>
                           <button
                             type="submit"
                             className="btn-secondary"
-                            style={{ padding: '4px 14px', fontSize: '0.9rem' }}
+                            style={{ padding: '2px 10px', fontSize: '0.8rem' }}
                           >
-                            {payment.paid ? (
-                              <span className="check">✓ Оплачено</span>
-                            ) : (
-                              <span className="cross">Не оплачено</span>
-                            )}
+                            Сохранить
                           </button>
                         </form>
                       ) : (
@@ -194,6 +218,12 @@ export default async function StudentPage({ params, searchParams }) {
       <div className="card card-chart">
         <div className="card-title">Динамика по урокам</div>
         <TrendChart lessons={lessons || []} />
+      </div>
+
+      {/* ------------------- ГРАФИК ВЫПОЛНЕНИЯ ДЗ ------------------- */}
+      <div className="card card-chart">
+        <div className="card-title">Выполнение ДЗ</div>
+        <HomeworkChart lessons={lessons || []} />
       </div>
 
       {/* ------------------- ДОБАВИТЬ УРОК ------------------- */}
@@ -399,7 +429,7 @@ export default async function StudentPage({ params, searchParams }) {
               <form action={deleteStudentAction}>
                 <button type="submit" className="btn-danger">Да, удалить навсегда</button>
               </form>
-              <a
+              
                 href={`/dashboard/students/${studentId}`}
                 className="btn-secondary"
                 style={{ textDecoration: 'none' }}
@@ -409,7 +439,7 @@ export default async function StudentPage({ params, searchParams }) {
             </div>
           </>
         ) : (
-          <a
+          
             href={`/dashboard/students/${studentId}?confirmDelete=1`}
             className="btn-danger"
             style={{ textDecoration: 'none', display: 'inline-block' }}
