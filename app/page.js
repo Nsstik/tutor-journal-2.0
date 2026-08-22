@@ -13,7 +13,6 @@ export default async function ParentPage() {
     } = await supabase.auth.getUser();
     user = authUser;
   } catch (error) {
-    // Битый/просроченный refresh-токен — считаем, что пользователь не залогинен
     console.error('Auth error on home page:', error?.message);
     user = null;
   }
