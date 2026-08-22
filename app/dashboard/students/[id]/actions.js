@@ -58,6 +58,17 @@ export async function addLesson(studentId, formData) {
     paid,
   });
 
+  // Если тема урока совпадает с одной из тем «на подтянуть» — автоматически
+  // отмечаем её пройденной, чтобы не приходилось отмечать вручную дважды.
+  if (topic) {
+    await supabase
+      .from('topics_to_review')
+      .update({ done: true })
+      .eq('student_id', studentId)
+      .eq('done', false)
+      .ilike('topic', topic.trim());
+  }
+
   revalidatePath(`/dashboard/students/${studentId}`);
 }
 
@@ -82,6 +93,54 @@ export async function updatePayment(studentId, formData) {
   const amount = amountRaw === '' || amountRaw === null ? null : Number(amountRaw);
 
   await supabase.from('payments').update({ paid, amount }).eq('id', paymentId);
+  revalidatePath(`/dashboard/students/${studentId}`);
+}
+
+// Полное редактирование урока (дата, тема, оценки, комментарии, ДЗ и оплата
+// одновременно) — доступно по кнопке «Редактировать» уже после сохранения урока.
+export async function updateLessonFull(studentId, formData) {
+  const supabase = createClient();
+  await assertOwnsStudent(supabase, studentId);
+
+  const lessonId = formData.get('lessonId');
+  const paymentId = formData.get('paymentId');
+
+  const lesson_date = formData.get('lesson_date');
+  const topic = formData.get('topic');
+  const behavior_rating = formData.get('behavior_rating')
+    ? Number(formData.get('behavior_rating'))
+    : null;
+  const work_rating = formData.get('work_rating') ? Number(formData.get('work_rating')) : null;
+  const behavior_comment = formData.get('behavior_comment') || null;
+  const homework_done = formData.get('homework_done') === 'on';
+  const homework_comment = formData.get('homework_comment') || null;
+
+  const paid = formData.get('paid') === 'on';
+  const amountRaw = formData.get('amount');
+  const amount = amountRaw === '' || amountRaw === null ? null : Number(amountRaw);
+
+  const { error } = await supabase
+    .from('lessons')
+    .update({
+      lesson_date,
+      topic,
+      behavior_rating,
+      work_rating,
+      behavior_comment,
+      homework_done,
+      homework_comment,
+    })
+    .eq('id', lessonId);
+
+  if (error) throw error;
+
+  if (paymentId) {
+    await supabase.from('payments').update({ paid, amount }).eq('id', paymentId);
+  } else {
+    // На случай старых уроков, у которых почему-то не создалась запись оплаты.
+    await supabase.from('payments').insert({ lesson_id: lessonId, student_id: studentId, paid, amount });
+  }
+
   revalidatePath(`/dashboard/students/${studentId}`);
 }
 
