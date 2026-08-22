@@ -680,3 +680,205 @@ label {
     padding: 6px 14px;
   }
 }
+/* =========================================================
+   Карточки-сводка (StatCard) — короткая статистика по оплате
+   над таблицей уроков.
+   ========================================================= */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.stat-card {
+  background: var(--paper);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  border: 1.5px solid var(--paper-line);
+}
+
+.stat-card-value {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.stat-card-label {
+  margin-top: 6px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  font-weight: 800;
+}
+
+.stat-card-gold .stat-card-value {
+  color: var(--gold);
+}
+
+.stat-card-green .stat-card-value {
+  color: var(--green-ink);
+}
+
+.stat-card-red {
+  border-color: var(--red-soft);
+  background: var(--red-soft);
+}
+
+.stat-card-red .stat-card-value {
+  color: var(--red-pen);
+}
+
+/* -------- Дата в таблице: компактно, в две строки, без переноса -------- */
+.date-cell {
+  white-space: nowrap;
+}
+
+.date-day {
+  font-weight: 700;
+}
+
+.date-rest {
+  margin-top: 2px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* -------- Кнопка «Редактировать» и раскрывающаяся строка урока -------- */
+.actions-cell {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.edit-toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+table.ledger tr.lesson-edit-row {
+  display: none;
+}
+
+table.ledger tr.lesson-row:has(> td > input.edit-toggle:checked) {
+  border-radius: var(--radius-sm);
+}
+
+table.ledger tr.lesson-row:has(> td > input.edit-toggle:checked) td {
+  background: var(--gold-soft);
+}
+
+table.ledger tr.lesson-row:has(> td > input.edit-toggle:checked) + tr.lesson-edit-row {
+  display: table-row;
+}
+
+table.ledger tr.lesson-edit-row td {
+  background: var(--paper) !important;
+  border-radius: var(--radius-sm);
+  padding: 24px 26px;
+}
+
+.lesson-edit-form .field {
+  margin-bottom: 14px;
+}
+
+.lesson-edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.lesson-edit-actions .btn-secondary {
+  cursor: pointer;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-variant: normal;
+  text-transform: none;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: normal;
+  font-size: 1rem;
+}
+
+.checkbox-label input {
+  width: auto;
+}
+
+.field-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+/* =========================================================
+   Подпись автора сайта — аккуратный «водяной знак» внизу справа.
+   На мобильных превращается в обычную строку внизу страницы,
+   чтобы не перекрывать контент.
+   ========================================================= */
+.site-signature {
+  position: fixed;
+  right: 24px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  opacity: 0.8;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  user-select: none;
+  z-index: 20;
+}
+
+.signature-mark {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--gold-soft);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .site-signature {
+    position: static;
+    justify-content: center;
+    margin: 28px auto 0;
+    opacity: 0.65;
+  }
+}
