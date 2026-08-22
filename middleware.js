@@ -23,9 +23,24 @@ export async function middleware(request) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
+    user = authUser;
+  } catch (error) {
+    // Битый/просроченный refresh-токен в cookie — Supabase кидает исключение
+    // вместо того, чтобы вернуть user: null. Раньше это роняло сайт с 500.
+    // Считаем пользователя неавторизованным и чистим "мёртвые" cookies сессии.
+    console.error('Auth error in middleware, clearing session:', error?.message);
+    user = null;
+    request.cookies.getAll().forEach((cookie) => {
+      if (cookie.name.startsWith('sb-')) {
+        response.cookies.set(cookie.name, '', { maxAge: 0 });
+      }
+    });
+  }
 
   const path = request.nextUrl.pathname;
   const isAuthPage = path.startsWith('/login');
