@@ -78,13 +78,13 @@ export async function middleware(request) {
 
     if (isAuthPage) {
       const url = request.nextUrl.clone();
-      url.pathname = profile.role === 'parent' ? '/parent' : '/dashboard';
+      url.pathname = profile.role === 'parent' ? '/' : '/dashboard';
       return NextResponse.redirect(url);
     }
 
     if (isDashboard && profile.role !== 'repetitor') {
       const url = request.nextUrl.clone();
-      url.pathname = '/parent';
+      url.pathname = '/';
       return NextResponse.redirect(url);
     }
     if (isParentArea && profile.role !== 'parent') {
