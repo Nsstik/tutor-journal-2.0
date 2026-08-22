@@ -5,7 +5,7 @@ import { TrendChart, StarsDisplay } from '@/lib/trend-chart';
 
 export default async function ParentPage() {
   const supabase = createClient();
-
+  
   let user = null;
   try {
     const {
