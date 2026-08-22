@@ -428,7 +428,7 @@ export default async function StudentPage({ params, searchParams }) {
             <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
               <form action={deleteStudentAction}>
                 <button type="submit" className="btn-danger">Да, удалить навсегда</button>
-                </form>
+              </form>
               
                 href={`/dashboard/students/${studentId}`}
                 className="btn-secondary"
@@ -438,7 +438,7 @@ export default async function StudentPage({ params, searchParams }) {
               </a>
             </div>
           </>
-         ) : (
+       ) : (
           
             href={`/dashboard/students/${studentId}?confirmDelete=1`}
             className="btn-danger"
