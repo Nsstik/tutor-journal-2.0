@@ -72,6 +72,19 @@ export async function togglePaid(studentId, formData) {
   revalidatePath(`/dashboard/students/${studentId}`);
 }
 
+export async function updatePayment(studentId, formData) {
+  const supabase = createClient();
+  await assertOwnsStudent(supabase, studentId);
+
+  const paymentId = formData.get('paymentId');
+  const paid = formData.get('paid') === 'on';
+  const amountRaw = formData.get('amount');
+  const amount = amountRaw === '' || amountRaw === null ? null : Number(amountRaw);
+
+  await supabase.from('payments').update({ paid, amount }).eq('id', paymentId);
+  revalidatePath(`/dashboard/students/${studentId}`);
+}
+
 export async function toggleHomework(studentId, formData) {
   const supabase = createClient();
   await assertOwnsStudent(supabase, studentId);
