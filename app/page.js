@@ -24,9 +24,14 @@ export default async function ParentPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('student_id, show_payment')
+    .select('role, student_id, show_payment')
     .eq('id', user.id)
     .single();
+
+  // Репетитор попал на главную (родительскую) страницу — уводим в его панель.
+  if (profile?.role === 'repetitor') {
+    redirect('/dashboard');
+  }
 
   if (!profile?.student_id) {
     return (
