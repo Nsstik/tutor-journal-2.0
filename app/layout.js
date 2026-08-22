@@ -8,7 +8,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body>
+        {children}
+        <div className="site-signature" aria-hidden="true">
+          <span className="signature-mark">Ю</span>
+          <span>Юрлова А.И.</span>
+        </div>
+      </body>
     </html>
   );
 }
