@@ -438,7 +438,7 @@ export default async function StudentPage({ params, searchParams }) {
               </a>
             </div>
           </>
-       ) : (
+        ) : (
           
             href={`/dashboard/students/${studentId}?confirmDelete=1`}
             className="btn-danger"
