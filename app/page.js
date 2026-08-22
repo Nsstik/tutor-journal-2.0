@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { signOut } from '@/app/dashboard/actions';
-import { TrendChart, StarsDisplay } from '@/lib/trend-chart';
+import { TrendChart, HomeworkChart, StarsDisplay } from '@/lib/trend-chart';
 
 export default async function ParentPage() {
   const supabase = createClient();
-  
+
   let user = null;
   try {
     const {
@@ -13,6 +13,7 @@ export default async function ParentPage() {
     } = await supabase.auth.getUser();
     user = authUser;
   } catch (error) {
+    // Битый/просроченный refresh-токен — считаем, что пользователь не залогинен
     console.error('Auth error on home page:', error?.message);
     user = null;
   }
@@ -139,6 +140,11 @@ export default async function ParentPage() {
       <div className="card card-chart">
         <div className="card-title">Динамика по урокам</div>
         <TrendChart lessons={lessons || []} />
+      </div>
+
+      <div className="card card-chart">
+        <div className="card-title">Выполнение ДЗ</div>
+        <HomeworkChart lessons={lessons || []} />
       </div>
 
       <div className="card">
