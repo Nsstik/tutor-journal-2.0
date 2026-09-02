@@ -20,7 +20,7 @@ async function assertOwnsStudent(supabase, studentId) {
   return user;
 }
 
-export async function addLesson(studentId, formData) {
+export async function addLesson(studentId, prevState, formData) {
   const supabase = createClient();
   await assertOwnsStudent(supabase, studentId);
 
@@ -70,6 +70,7 @@ export async function addLesson(studentId, formData) {
   }
 
   revalidatePath(`/dashboard/students/${studentId}`);
+  return { ok: true, ts: Date.now() };
 }
 
 export async function togglePaid(studentId, formData) {
@@ -98,7 +99,7 @@ export async function updatePayment(studentId, formData) {
 
 // Полное редактирование урока (дата, тема, оценки, комментарии, ДЗ и оплата
 // одновременно) — доступно по кнопке «Редактировать» уже после сохранения урока.
-export async function updateLessonFull(studentId, formData) {
+export async function updateLessonFull(studentId, prevState, formData) {
   const supabase = createClient();
   await assertOwnsStudent(supabase, studentId);
 
@@ -142,6 +143,7 @@ export async function updateLessonFull(studentId, formData) {
   }
 
   revalidatePath(`/dashboard/students/${studentId}`);
+  return { ok: true, ts: Date.now() };
 }
 
 export async function toggleHomework(studentId, formData) {
