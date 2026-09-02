@@ -1,7 +1,7 @@
-import { Fragment } from 'react';
 import { createClient } from '@/lib/supabase/server';
-import { TrendChart, HomeworkChart, StarsDisplay, StarInput } from '@/lib/trend-chart';
-import { StatCard } from '@/components/StatCard';
+import { TrendChart, HomeworkChart } from '@/lib/trend-chart';
+import { AddLessonForm } from '@/components/AddLessonForm';
+import { LessonRow } from '@/components/LessonRow';
 import {
   addLesson,
   updateLessonFull,
@@ -100,17 +100,6 @@ export default async function StudentPage({ params, searchParams }) {
   // темы урока в форме «Добавить урок».
   const pendingTopics = (topics || []).filter((t) => !t.done);
 
-  // Быстрая сводка по оплате — считается на лету из уже загруженных уроков.
-  const paidSum = (lessons || []).reduce((sum, l) => {
-    const p = l.payments?.[0];
-    return p?.paid && p.amount ? sum + Number(p.amount) : sum;
-  }, 0);
-  const unpaidSum = (lessons || []).reduce((sum, l) => {
-    const p = l.payments?.[0];
-    return p && !p.paid && p.amount ? sum + Number(p.amount) : sum;
-  }, 0);
-  const unpaidCount = (lessons || []).filter((l) => !l.payments?.[0]?.paid).length;
-
   return (
     <div className="shell">
       <div className="masthead">
@@ -150,18 +139,6 @@ export default async function StudentPage({ params, searchParams }) {
       <div className="card">
         <div className="card-title">Уроки</div>
 
-        {lessons && lessons.length > 0 && (
-          <div className="stats-row">
-            <StatCard label="Уроков всего" value={lessons.length} accent="gold" />
-            <StatCard label="Оплачено, ₽" value={paidSum} accent="green" />
-            <StatCard
-              label={unpaidCount > 0 ? `Долг, ₽ (${unpaidCount})` : 'Долг, ₽'}
-              value={unpaidSum}
-              accent={unpaidSum > 0 ? 'red' : 'green'}
-            />
-          </div>
-        )}
-
         {lessons && lessons.length > 0 ? (
           <table className="ledger">
             <thead>
@@ -179,185 +156,15 @@ export default async function StudentPage({ params, searchParams }) {
               {lessons.map((l) => {
                 const payment = l.payments?.[0];
                 const dateParts = formatLessonDate(l.lesson_date);
-                const editId = `edit-${l.id}`;
                 return (
-                  <Fragment key={l.id}>
-                    <tr className="lesson-row">
-                      <td className="date-cell">
-                        <div className="date-day">{dateParts.day}</div>
-                        <div className="date-rest muted">{dateParts.rest}</div>
-                      </td>
-                      <td>
-                        {l.topic}
-                        {l.behavior_comment && (
-                          <div className="muted">{l.behavior_comment}</div>
-                        )}
-                      </td>
-                      <td>
-                        {l.behavior_rating ? (
-                          <StarsDisplay value={l.behavior_rating} />
-                        ) : l.behavior ? (
-                          <span className="tag tag-neutral">{l.behavior}</span>
-                        ) : (
-                          <span className="muted">—</span>
-                        )}
-                      </td>
-                      <td>
-                        <StarsDisplay value={l.work_rating} />
-                      </td>
-                      <td>
-                        <form action={toggleHomeworkAction}>
-                          <input type="hidden" name="lessonId" value={l.id} />
-                          <input
-                            type="hidden"
-                            name="nextValue"
-                            value={(!l.homework_done).toString()}
-                          />
-                          <button
-                            type="submit"
-                            className="btn-secondary"
-                            style={{ padding: '2px 10px', fontSize: '0.85rem' }}
-                          >
-                            {l.homework_done ? (
-                              <span className="check">✓ сделано</span>
-                            ) : (
-                              <span className="cross">— не сделано</span>
-                            )}
-                          </button>
-                        </form>
-                      </td>
-                      <td>
-                        {payment?.paid ? (
-                          <span className="check">
-                            ✓ {payment.amount ? `${payment.amount} ₽` : 'Оплачено'}
-                          </span>
-                        ) : (
-                          <span className="cross">
-                            {payment?.amount ? `${payment.amount} ₽ · не оплачено` : 'Не оплачено'}
-                          </span>
-                        )}
-                      </td>
-                      <td className="actions-cell">
-                        <input type="checkbox" id={editId} className="edit-toggle" />
-                        <label htmlFor={editId} className="btn-secondary edit-btn" title="Редактировать урок">
-                          ✎
-                        </label>
-                      </td>
-                    </tr>
-                    <tr className="lesson-edit-row">
-                      <td colSpan={7}>
-                        <form action={updateLessonFullAction} className="lesson-edit-form">
-                          <input type="hidden" name="lessonId" value={l.id} />
-                          {payment?.id && <input type="hidden" name="paymentId" value={payment.id} />}
-
-                          <div className="form-row">
-                            <div className="field">
-                              <label htmlFor={`${editId}-date`}>Дата</label>
-                              <input
-                                id={`${editId}-date`}
-                                name="lesson_date"
-                                type="date"
-                                defaultValue={l.lesson_date}
-                                required
-                              />
-                            </div>
-                            <div className="field">
-                              <label htmlFor={`${editId}-topic`}>Тема урока</label>
-                              <input
-                                id={`${editId}-topic`}
-                                name="topic"
-                                type="text"
-                                list="pending-topics-list"
-                                defaultValue={l.topic || ''}
-                                required
-                              />
-                            </div>
-                          </div>
-
-                          <div className="form-row">
-                            <div className="field">
-                              <label>Поведение</label>
-                              <StarInput
-                                name="behavior_rating"
-                                idPrefix={`${editId}-behavior`}
-                                defaultValue={l.behavior_rating || 5}
-                              />
-                            </div>
-                            <div className="field">
-                              <label>Работа на уроке</label>
-                              <StarInput
-                                name="work_rating"
-                                idPrefix={`${editId}-work`}
-                                defaultValue={l.work_rating || 5}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="field">
-                            <label htmlFor={`${editId}-behavior-comment`}>Комментарий</label>
-                            <input
-                              id={`${editId}-behavior-comment`}
-                              name="behavior_comment"
-                              type="text"
-                              defaultValue={l.behavior_comment || ''}
-                            />
-                          </div>
-
-                          <div className="form-row">
-                            <div className="field">
-                              <label style={{ marginBottom: 10 }}>Домашняя работа</label>
-                              <label className="checkbox-label">
-                                <input
-                                  name="homework_done"
-                                  type="checkbox"
-                                  defaultChecked={l.homework_done}
-                                />
-                                выполнена
-                              </label>
-                            </div>
-                            <div className="field">
-                              <label htmlFor={`${editId}-hw-comment`}>Комментарий к ДЗ</label>
-                              <input
-                                id={`${editId}-hw-comment`}
-                                name="homework_comment"
-                                type="text"
-                                defaultValue={l.homework_comment || ''}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="form-row">
-                            <div className="field">
-                              <label htmlFor={`${editId}-amount`}>Сумма оплаты, ₽</label>
-                              <input
-                                id={`${editId}-amount`}
-                                name="amount"
-                                type="number"
-                                defaultValue={payment?.amount ?? ''}
-                                placeholder="сумма"
-                              />
-                            </div>
-                            <div className="field">
-                              <label style={{ marginBottom: 10 }}>Статус оплаты</label>
-                              <label className="checkbox-label">
-                                <input name="paid" type="checkbox" defaultChecked={payment?.paid} />
-                                оплачено
-                              </label>
-                            </div>
-                          </div>
-
-                          <div className="lesson-edit-actions">
-                            <button className="btn" type="submit">
-                              Сохранить изменения
-                            </button>
-                            <label htmlFor={editId} className="btn-secondary">
-                              Отмена
-                            </label>
-                          </div>
-                        </form>
-                      </td>
-                    </tr>
-                  </Fragment>
+                  <LessonRow
+                    key={l.id}
+                    lesson={l}
+                    payment={payment}
+                    dateParts={dateParts}
+                    action={updateLessonFullAction}
+                    toggleHomeworkAction={toggleHomeworkAction}
+                  />
                 );
               })}
             </tbody>
@@ -382,73 +189,11 @@ export default async function StudentPage({ params, searchParams }) {
       {/* ------------------- ДОБАВИТЬ УРОК ------------------- */}
       <div className="card">
         <div className="card-title">Добавить урок</div>
-        <form action={addLessonAction}>
-          <div className="form-row">
-            <div className="field">
-              <label htmlFor="lesson_date">Дата</label>
-              <input id="lesson_date" name="lesson_date" type="date" defaultValue={todayISO()} required />
-            </div>
-            <div className="field">
-              <label htmlFor="topic">Тема урока</label>
-              <input
-                id="topic"
-                name="topic"
-                type="text"
-                list="pending-topics-list"
-                placeholder={pendingTopics.length ? 'Начните вводить или выберите из списка' : 'Например: проценты'}
-                autoComplete="off"
-                required
-              />
-              {pendingTopics.length > 0 && (
-                <span className="field-hint muted">
-                  💡 можно выбрать из тем «на подтянуть» — совпавшая тема автоматически отметится пройденной
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="field">
-              <label>Поведение</label>
-              <StarInput name="behavior_rating" defaultValue={5} />
-            </div>
-            <div className="field">
-              <label>Работа на уроке</label>
-              <StarInput name="work_rating" defaultValue={5} />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="field" style={{ gridColumn: '1 / -1' }}>
-              <label htmlFor="behavior_comment">Комментарий (необязательно)</label>
-              <input id="behavior_comment" name="behavior_comment" type="text" />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="field">
-              <label htmlFor="homework_done">Домашняя работа</label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontVariant: 'normal' }}>
-                <input id="homework_done" name="homework_done" type="checkbox" style={{ width: 'auto' }} />
-                выполнена
-              </label>
-            </div>
-            <div className="field">
-              <label htmlFor="homework_comment">Комментарий к ДЗ</label>
-              <input id="homework_comment" name="homework_comment" type="text" />
-            </div>
-          </div>
-
-          <div className="field">
-            <label htmlFor="paid">Оплата</label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontVariant: 'normal' }}>
-              <input id="paid" name="paid" type="checkbox" style={{ width: 'auto' }} />
-              оплачено
-            </label>
-          </div>
-
-          <button className="btn" type="submit">Сохранить урок</button>
-        </form>
+        <AddLessonForm
+          action={addLessonAction}
+          todayISO={todayISO()}
+          hasPendingTopics={pendingTopics.length > 0}
+        />
       </div>
 
       {/* ------------------- ТЕМЫ ------------------- */}
@@ -595,23 +340,11 @@ export default async function StudentPage({ params, searchParams }) {
               <form action={deleteStudentAction}>
                 <button type="submit" className="btn-danger">Да, удалить навсегда</button>
               </form>
-              <a
-                href={`/dashboard/students/${studentId}`}
-                className="btn-secondary"
-                style={{ textDecoration: 'none' }}
-              >
-                Отмена
-              </a>
+              <a href={`/dashboard/students/${studentId}`} className="btn-secondary" style={{ textDecoration: 'none' }}>Отмена</a>
             </div>
           </>
         ) : (
-          <a
-            href={`/dashboard/students/${studentId}?confirmDelete=1`}
-            className="btn-danger"
-            style={{ textDecoration: 'none', display: 'inline-block' }}
-          >
-            Удалить ученика
-          </a>
+          <a href={`/dashboard/students/${studentId}?confirmDelete=1`} className="btn-danger" style={{ textDecoration: 'none', display: 'inline-block' }}>Удалить ученика</a>
         )}
       </div>
     </div>
