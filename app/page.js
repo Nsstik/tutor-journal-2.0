@@ -73,14 +73,14 @@ export default async function ParentPage() {
 
   return (
     <div className="shell">
-      <div className="masthead">
-        <div>
-          <div className="eyebrow">{student?.subject}</div>
-          <h1>{student?.full_name}</h1>
+            <div className="masthead">
+        <h1>{student?.full_name}</h1>
+        <div className="masthead-right">
+          <div className="eyebrow eyebrow-right">{student?.subject}</div>
+          <form action={signOut}>
+            <button className="btn-secondary" type="submit">Выйти</button>
+          </form>
         </div>
-        <form action={signOut}>
-          <button className="btn-secondary" type="submit">Выйти</button>
-        </form>
       </div>
 
       {/* ------------------- РАСПИСАНИЕ ------------------- */}
