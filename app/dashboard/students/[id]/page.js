@@ -156,7 +156,10 @@ export default async function StudentPage({ params, searchParams }) {
             </thead>
             <tbody>
               {lessons.map((l) => {
-                const payment = l.payments?.[0];
+                // payments.lesson_id уникальный, поэтому Supabase отдаёт эту связь
+                // как один объект, а не массив — раньше тут было `l.payments?.[0]`,
+                // что всегда давало undefined и ломало отображение статуса оплаты.
+                const payment = l.payments;
                 const dateParts = formatLessonDate(l.lesson_date);
                 return (
                   <LessonRow
