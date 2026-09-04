@@ -78,9 +78,22 @@ export async function togglePaid(studentId, formData) {
   await assertOwnsStudent(supabase, studentId);
 
   const paymentId = formData.get('paymentId');
+  const lessonId = formData.get('lessonId');
   const nextValue = formData.get('nextValue') === 'true';
 
-  await supabase.from('payments').update({ paid: nextValue }).eq('id', paymentId);
+  if (paymentId) {
+    await supabase.from('payments').update({ paid: nextValue }).eq('id', paymentId);
+  } else {
+    // Если у урока почему-то ещё нет записи оплаты — создаём её сразу при клике,
+    // точно так же просто, как переключается ДЗ.
+    await supabase
+      .from('payments')
+      .upsert(
+        { lesson_id: lessonId, student_id: studentId, paid: nextValue },
+        { onConflict: 'lesson_id' }
+      );
+  }
+
   revalidatePath(`/dashboard/students/${studentId}`);
 }
 
