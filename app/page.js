@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { signOut } from '@/app/dashboard/actions';
 import { TrendChart, HomeworkChart, StarsDisplay } from '@/lib/trend-chart';
+import { WEEKDAY_NAMES, formatTime, sortByNextOccurrence } from '@/lib/schedule';
 
 export default async function ParentPage() {
   const supabase = createClient();
@@ -59,6 +60,13 @@ export default async function ParentPage() {
     .eq('student_id', profile.student_id)
     .order('created_at', { ascending: true });
 
+  const { data: schedule } = await supabase
+    .from('schedule_slots')
+    .select('*')
+    .eq('student_id', profile.student_id);
+
+  const sortedSchedule = sortByNextOccurrence(schedule);
+
   const topicsDone = (topics || []).filter((t) => t.done).length;
   const topicsTotal = (topics || []).length;
   const topicsPercent = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;
@@ -73,6 +81,25 @@ export default async function ParentPage() {
         <form action={signOut}>
           <button className="btn-secondary" type="submit">Выйти</button>
         </form>
+      </div>
+
+      {/* ------------------- РАСПИСАНИЕ ------------------- */}
+      <div className="card">
+        <div className="card-title">Расписание занятий</div>
+        {sortedSchedule.length > 0 ? (
+          <div className="schedule-list">
+            {sortedSchedule.map((s, idx) => (
+              <div key={s.id} className={`schedule-row-static ${idx === 0 ? 'schedule-row-next' : ''}`}>
+                <span>
+                  {WEEKDAY_NAMES[s.weekday]}, {formatTime(s.time_of_day)}
+                </span>
+                {idx === 0 && <span className="schedule-next-tag">Ближайшее</span>}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="muted">Расписание пока не назначено.</p>
+        )}
       </div>
 
       <div className="card">
