@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { TrendChart, HomeworkChart } from '@/lib/trend-chart';
 import { AddLessonForm } from '@/components/AddLessonForm';
 import { LessonRow } from '@/components/LessonRow';
+import { ScheduleManager } from '@/components/ScheduleManager';
 import {
   addLesson,
   updateLessonFull,
@@ -11,6 +12,9 @@ import {
   addTopicsBulk,
   toggleTopic,
   deleteTopic,
+  addScheduleSlot,
+  updateScheduleSlot,
+  deleteScheduleSlot,
   createParentAccount,
   updateParentPayment,
   removeParentAccess,
@@ -81,6 +85,13 @@ export default async function StudentPage({ params, searchParams }) {
     .eq('student_id', studentId)
     .eq('role', 'parent');
 
+  const { data: schedule } = await supabase
+    .from('schedule_slots')
+    .select('*')
+    .eq('student_id', studentId)
+    .order('weekday', { ascending: true })
+    .order('time_of_day', { ascending: true });
+
   const addLessonAction = addLesson.bind(null, studentId);
   const updateLessonFullAction = updateLessonFull.bind(null, studentId);
   const toggleHomeworkAction = toggleHomework.bind(null, studentId);
@@ -89,6 +100,9 @@ export default async function StudentPage({ params, searchParams }) {
   const addTopicsBulkAction = addTopicsBulk.bind(null, studentId);
   const toggleTopicAction = toggleTopic.bind(null, studentId);
   const deleteTopicAction = deleteTopic.bind(null, studentId);
+  const addScheduleSlotAction = addScheduleSlot.bind(null, studentId);
+  const updateScheduleSlotAction = updateScheduleSlot.bind(null, studentId);
+  const deleteScheduleSlotAction = deleteScheduleSlot.bind(null, studentId);
   const createParentAction = createParentAccount.bind(null, studentId);
   const updateParentPaymentAction = updateParentPayment.bind(null, studentId);
   const removeParentAction = removeParentAccess.bind(null, studentId);
@@ -136,6 +150,17 @@ export default async function StudentPage({ params, searchParams }) {
           <option key={t.id} value={t.topic} />
         ))}
       </datalist>
+
+      {/* ------------------- РАСПИСАНИЕ ------------------- */}
+      <div className="card">
+        <div className="card-title">Расписание</div>
+        <ScheduleManager
+          slots={schedule || []}
+          addAction={addScheduleSlotAction}
+          updateAction={updateScheduleSlotAction}
+          deleteAction={deleteScheduleSlotAction}
+        />
+      </div>
 
       {/* ------------------- УРОКИ ------------------- */}
       <div className="card">
