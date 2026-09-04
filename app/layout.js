@@ -11,7 +11,6 @@ export default function RootLayout({ children }) {
       <body>
         {children}
         <div className="site-signature" aria-hidden="true">
-          <span className="signature-mark">Ю</span>
           <span>Юрлова А.И.</span>
         </div>
       </body>
