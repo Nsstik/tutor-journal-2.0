@@ -118,14 +118,14 @@ export default async function StudentPage({ params, searchParams }) {
 
   return (
     <div className="shell">
-      <div className="masthead">
-        <div>
-          <div className="eyebrow">{student.subject}</div>
-          <h1>{student.full_name}</h1>
+            <div className="masthead">
+        <h1>{student.full_name}</h1>
+        <div className="masthead-right">
+          <div className="eyebrow eyebrow-right">{student.subject}</div>
+          <a href="/dashboard" className="btn-secondary" style={{ textDecoration: 'none' }}>
+            ← Все ученики
+          </a>
         </div>
-        <a href="/dashboard" className="btn-secondary" style={{ textDecoration: 'none' }}>
-          ← Все ученики
-        </a>
       </div>
 
       {searchParams?.newParent && searchParams?.newPassword && (
