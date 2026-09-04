@@ -1086,7 +1086,7 @@ fieldset.form-section legend {
    удобнее листать с телефона.
    ========================================================= */
 .lesson-feed {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 12px;
 }
@@ -1364,6 +1364,13 @@ fieldset.form-section legend {
     padding: 14px;
     gap: 12px;
   }
+    .lesson-feed {
+    display: flex;
+  }
+
+  .lessons-table-wrap {
+    display: none;
+  }   
 }
 
 /* =========================================================
