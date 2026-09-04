@@ -166,6 +166,40 @@ export async function toggleHomework(studentId, formData) {
   revalidatePath(`/dashboard/students/${studentId}`);
 }
 
+export async function addScheduleSlot(studentId, formData) {
+  const supabase = createClient();
+  await assertOwnsStudent(supabase, studentId);
+
+  const weekday = Number(formData.get('weekday'));
+  const time_of_day = formData.get('time_of_day');
+  if (Number.isNaN(weekday) || !time_of_day) return;
+
+  await supabase.from('schedule_slots').insert({ student_id: studentId, weekday, time_of_day });
+  revalidatePath(`/dashboard/students/${studentId}`);
+}
+
+export async function updateScheduleSlot(studentId, formData) {
+  const supabase = createClient();
+  await assertOwnsStudent(supabase, studentId);
+
+  const slotId = formData.get('slotId');
+  const weekday = Number(formData.get('weekday'));
+  const time_of_day = formData.get('time_of_day');
+  if (!slotId || Number.isNaN(weekday) || !time_of_day) return;
+
+  await supabase.from('schedule_slots').update({ weekday, time_of_day }).eq('id', slotId);
+  revalidatePath(`/dashboard/students/${studentId}`);
+}
+
+export async function deleteScheduleSlot(studentId, formData) {
+  const supabase = createClient();
+  await assertOwnsStudent(supabase, studentId);
+
+  const slotId = formData.get('slotId');
+  await supabase.from('schedule_slots').delete().eq('id', slotId);
+  revalidatePath(`/dashboard/students/${studentId}`);
+}
+
 export async function addTopic(studentId, formData) {
   const supabase = createClient();
   await assertOwnsStudent(supabase, studentId);
