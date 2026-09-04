@@ -1395,11 +1395,16 @@ fieldset.form-section legend {
 
 @media (max-width: 640px) {
   .site-signature {
-    position: static;
+    right: 0;
+    left: 0;
+    bottom: 8px;
     justify-content: center;
-    margin: 16px auto 0;
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     opacity: 0.4;
+  }
+
+  .shell {
+    padding-bottom: 56px;
   }
 }
 
@@ -1433,4 +1438,15 @@ fieldset.form-section legend {
     opacity: 1;
     transform: translate(-50%, 0);
   }
+}
+
+.masthead-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.eyebrow-right {
+  text-align: right;
 }
