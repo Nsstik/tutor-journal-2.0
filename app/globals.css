@@ -6,7 +6,7 @@
    Шрифты: Fraunces (заголовки, с характером) + Inter (текст).
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@500;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
 
 :root {
   --paper: #fbf5ec;          /* тёплый кремовый фон страницы */
@@ -125,6 +125,37 @@ h1, h2, h3, h4 {
   font-weight: 500;
   color: var(--ink-soft);
   font-size: 1.02rem;
+}
+
+/* ---------- табличка с фамилией репетитора ---------- */
+.tutor-nameplate {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 28px 16px;
+  background: var(--paper-raised);
+  border: 1.5px solid var(--gold);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.tutor-nameplate::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid var(--gold-soft);
+  border-radius: calc(var(--radius-md) - 5px);
+  pointer-events: none;
+}
+
+.tutor-name {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 2.1rem;
+  letter-spacing: 0.01em;
+  color: var(--ink);
 }
 
 /* ---------- карточки ---------- */
