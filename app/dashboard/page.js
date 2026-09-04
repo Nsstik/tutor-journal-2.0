@@ -21,9 +21,9 @@ export default async function DashboardPage() {
   return (
     <div className="shell">
       <div className="masthead">
-        <div>
+        <div className="tutor-nameplate">
           <div className="eyebrow">Журнал успеваемости</div>
-          <h1>{profile?.full_name || 'Мой кабинет'}</h1>
+          <h1 className="tutor-name">{profile?.full_name || 'Мой кабинет'}</h1>
         </div>
         <form action={signOut}>
           <button className="btn-secondary" type="submit">Выйти</button>
