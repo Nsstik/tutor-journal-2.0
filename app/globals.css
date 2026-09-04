@@ -1367,26 +1367,22 @@ fieldset.form-section legend {
 }
 
 /* =========================================================
-   Подпись автора сайта — аккуратная «печать» внизу справа,
-   в едином стиле с табличкой фамилии репетитора.
+   Подпись автора сайта — едва заметный, тихий след внизу,
+   без фона, рамки и тени, чтобы не спорила с контентом.
    ========================================================= */
 .site-signature {
   position: fixed;
-  right: 24px;
-  bottom: 16px;
+  right: 20px;
+  bottom: 12px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 14px 6px 8px;
-  background: var(--paper-raised);
-  border: 1px solid var(--gold-soft);
-  border-radius: 999px;
-  box-shadow: var(--shadow-card);
-  font-family: 'Playfair Display', Georgia, serif;
+  gap: 6px;
+  font-family: Georgia, 'Times New Roman', serif;
   font-style: italic;
-  font-weight: 700;
-  font-size: 0.86rem;
+  font-weight: 500;
+  font-size: 0.72rem;
   color: var(--ink-soft);
+  opacity: 0.45;
   letter-spacing: 0.01em;
   pointer-events: none;
   user-select: none;
@@ -1394,30 +1390,19 @@ fieldset.form-section legend {
 }
 
 .signature-mark {
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--ink);
-  color: var(--gold);
-  border: 1px solid var(--gold);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Playfair Display', Georgia, serif;
-  font-style: normal;
-  font-weight: 800;
-  font-size: 0.82rem;
+  display: none;
 }
 
 @media (max-width: 640px) {
   .site-signature {
     position: static;
     justify-content: center;
-    margin: 28px auto 0;
-    opacity: 0.9;
+    margin: 16px auto 0;
+    font-size: 0.68rem;
+    opacity: 0.4;
   }
 }
+
 
 
 /* =========================================================
