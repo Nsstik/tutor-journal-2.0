@@ -804,6 +804,92 @@ label {
   cursor: default;
 }
 
+/* ---------- расписание занятий ---------- */
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.schedule-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  flex-wrap: wrap;
+}
+
+.schedule-row-label {
+  font-weight: 700;
+}
+
+.schedule-row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.schedule-row-editing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  background: var(--gold-soft);
+  flex-wrap: wrap;
+}
+
+.schedule-row-editing select,
+.schedule-row-editing input,
+.schedule-add-form select,
+.schedule-add-form input {
+  background: var(--paper-raised);
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+.schedule-add-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.schedule-row-static {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.schedule-row-static:last-child {
+  margin-bottom: 0;
+}
+
+.schedule-row-next {
+  background: var(--gold-soft);
+}
+
+.schedule-next-tag {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--gold-dark);
+}
+
 /* ---------- опасная зона / удаление ---------- */
 .card-danger {
   background: var(--red-soft);
@@ -1281,7 +1367,8 @@ fieldset.form-section legend {
 }
 
 /* =========================================================
-   Подпись автора сайта — аккуратный «водяной знак» внизу справа.
+   Подпись автора сайта — аккуратная «печать» внизу справа,
+   в едином стиле с табличкой фамилии репетитора.
    ========================================================= */
 .site-signature {
   position: fixed;
@@ -1289,13 +1376,17 @@ fieldset.form-section legend {
   bottom: 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-family: 'Fraunces', Georgia, serif;
+  gap: 10px;
+  padding: 6px 14px 6px 8px;
+  background: var(--paper-raised);
+  border: 1px solid var(--gold-soft);
+  border-radius: 999px;
+  box-shadow: var(--shadow-card);
+  font-family: 'Playfair Display', Georgia, serif;
   font-style: italic;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.86rem;
   color: var(--ink-soft);
-  opacity: 0.8;
   letter-spacing: 0.01em;
   pointer-events: none;
   user-select: none;
@@ -1303,19 +1394,20 @@ fieldset.form-section legend {
 }
 
 .signature-mark {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: var(--gold-soft);
-  color: var(--gold-dark);
+  background: var(--ink);
+  color: var(--gold);
+  border: 1px solid var(--gold);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-style: normal;
   font-weight: 800;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
 }
 
 @media (max-width: 640px) {
@@ -1323,7 +1415,7 @@ fieldset.form-section legend {
     position: static;
     justify-content: center;
     margin: 28px auto 0;
-    opacity: 0.65;
+    opacity: 0.9;
   }
 }
 
