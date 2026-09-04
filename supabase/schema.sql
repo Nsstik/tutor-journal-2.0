@@ -59,6 +59,16 @@ create table if not exists public.topics_to_review (
   created_at timestamptz default now()
 );
 
+-- 6. РАСПИСАНИЕ (постоянные слоты: день недели + время; можно назначить
+-- несколько на одного ученика, и в любой момент отредактировать)
+create table if not exists public.schedule_slots (
+  id uuid primary key default gen_random_uuid(),
+  student_id uuid not null references public.students (id) on delete cascade,
+  weekday smallint not null check (weekday between 0 and 6), -- 0 = воскресенье ... 6 = суббота (как в JS Date.getDay())
+  time_of_day time not null,
+  created_at timestamptz default now()
+);
+
 -- =========================================================
 -- ФУНКЦИИ-ПОМОЩНИКИ (чтобы не дублировать подзапросы в политиках)
 -- =========================================================
@@ -85,6 +95,7 @@ alter table public.students enable row level security;
 alter table public.lessons enable row level security;
 alter table public.payments enable row level security;
 alter table public.topics_to_review enable row level security;
+alter table public.schedule_slots enable row level security;
 
 -- ---------- profiles ----------
 create policy "видеть свой профиль" on public.profiles
@@ -141,6 +152,17 @@ create policy "репетитор управляет темами своих у�
   );
 
 create policy "родитель видит темы своего ученика" on public.topics_to_review
+  for select using (student_id = public.current_parent_student_id());
+
+-- ---------- schedule_slots ----------
+create policy "репетитор управляет расписанием своих учеников" on public.schedule_slots
+  for all using (
+    student_id in (select id from public.students where repetitor_id = auth.uid())
+  ) with check (
+    student_id in (select id from public.students where repetitor_id = auth.uid())
+  );
+
+create policy "родитель видит расписание своего ученика" on public.schedule_slots
   for select using (student_id = public.current_parent_student_id());
 
 -- =========================================================
