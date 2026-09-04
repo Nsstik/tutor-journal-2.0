@@ -103,10 +103,8 @@ export async function updatePayment(studentId, formData) {
 
   const paymentId = formData.get('paymentId');
   const paid = formData.get('paid') === 'on';
-  const amountRaw = formData.get('amount');
-  const amount = amountRaw === '' || amountRaw === null ? null : Number(amountRaw);
 
-  await supabase.from('payments').update({ paid, amount }).eq('id', paymentId);
+  await supabase.from('payments').update({ paid }).eq('id', paymentId);
   revalidatePath(`/dashboard/students/${studentId}`);
 }
 
@@ -130,8 +128,6 @@ export async function updateLessonFull(studentId, prevState, formData) {
   const homework_comment = formData.get('homework_comment') || null;
 
   const paid = formData.get('paid') === 'on';
-  const amountRaw = formData.get('amount');
-  const amount = amountRaw === '' || amountRaw === null ? null : Number(amountRaw);
 
   const { error } = await supabase
     .from('lessons')
@@ -149,10 +145,10 @@ export async function updateLessonFull(studentId, prevState, formData) {
   if (error) throw error;
 
   if (paymentId) {
-    await supabase.from('payments').update({ paid, amount }).eq('id', paymentId);
+    await supabase.from('payments').update({ paid }).eq('id', paymentId);
   } else {
     // На случай старых уроков, у которых почему-то не создалась запись оплаты.
-    await supabase.from('payments').insert({ lesson_id: lessonId, student_id: studentId, paid, amount });
+    await supabase.from('payments').insert({ lesson_id: lessonId, student_id: studentId, paid });
   }
 
   revalidatePath(`/dashboard/students/${studentId}`);
