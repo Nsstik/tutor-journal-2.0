@@ -1,32 +1,35 @@
 /* =========================================================
-   Дизайн-система «Журнал успеваемости»
-   Современный, премиальный стиль: тёплый нейтральный фон,
-   белые карточки с мягкой тенью, жирная типографика,
-   без разлиновки и подчёркиваний — акценты через цвет и вес.
+   Дизайн-система «Журнал успеваемости» v3
+   Тёплый, уютный премиальный стиль: кремовый фон, мягкие тени
+   тёплого оттенка, крупные скругления, дружелюбная типографика.
 
-   Шрифты: Fraunces (заголовки, с характером) + Inter (текст, жирный).
+   Шрифты: Fraunces (заголовки, с характером) + Inter (текст).
    ========================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@500;600;700;800&display=swap');
 
 :root {
-  --paper: #f6f4ef;          /* фон страницы — тёплый нейтральный, не белый */
-  --paper-raised: #ffffff;   /* поверхность карточек */
-  --paper-line: #e9e5db;     /* минимальный акцент-разделитель, используется точечно */
-  --ink: #16181f;
-  --ink-soft: #6b7280;
-  --red-pen: #b3261e;
-  --red-soft: #f8e8e6;
-  --green-ink: #1f7a4d;
-  --green-soft: #e4f1e9;
+  --paper: #fbf5ec;          /* тёплый кремовый фон страницы */
+  --paper-raised: #fffdf9;   /* поверхность карточек — чуть теплее чистого белого */
+  --paper-line: #ecdfc7;     /* тонкий тёплый разделитель */
+  --ink: #2a2118;            /* тёплый почти-чёрный (вместо холодного серого) */
+  --ink-soft: #8a7a67;       /* тёплый серо-коричневый для второстепенного текста */
+  --red-pen: #b3453a;
+  --red-soft: #f7e7e1;
+  --green-ink: #3f7d5c;
+  --green-soft: #e8f1ea;
   --gold: #b8863d;
-  --gold-soft: #f3e6cd;
+  --gold-dark: #96692b;
+  --gold-soft: #f5e8cc;
+  --terracotta: #c1613f;
+  --terracotta-soft: #f6e2d6;
 
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
-  --shadow-card: 0 1px 2px rgba(22, 24, 31, 0.04), 0 14px 32px -16px rgba(22, 24, 31, 0.16);
-  --shadow-card-hover: 0 1px 2px rgba(22, 24, 31, 0.05), 0 20px 40px -16px rgba(22, 24, 31, 0.22);
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  --shadow-card: 0 1px 2px rgba(58, 41, 20, 0.05), 0 16px 34px -18px rgba(58, 41, 20, 0.22);
+  --shadow-card-hover: 0 1px 2px rgba(58, 41, 20, 0.06), 0 22px 42px -16px rgba(58, 41, 20, 0.28);
+  --shadow-pop: 0 10px 24px -8px rgba(184, 134, 61, 0.45);
 }
 
 * {
@@ -38,6 +41,9 @@ body {
   padding: 0;
   margin: 0;
   background: var(--paper);
+  background-image: radial-gradient(circle at 12% 0%, rgba(184, 134, 61, 0.07), transparent 45%),
+    radial-gradient(circle at 100% 12%, rgba(193, 97, 63, 0.05), transparent 40%);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: 'Inter', -apple-system, system-ui, sans-serif;
   font-weight: 500;
@@ -67,28 +73,52 @@ h1, h2, h3, h4 {
   letter-spacing: 0.12em;
   font-size: 0.76rem;
   font-weight: 800;
-  color: var(--gold);
+  color: var(--gold-dark);
 }
 
 .shell {
   max-width: 960px;
   margin: 0 auto;
-  padding: 48px 24px 90px;
+  padding: 40px 24px 90px;
 }
 
+/* ---------- шапка / логотип ---------- */
 .masthead {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-bottom: 8px;
-  margin-bottom: 40px;
+  margin-bottom: 36px;
   gap: 16px;
   flex-wrap: wrap;
 }
 
+.masthead-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-mark {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  box-shadow: var(--shadow-pop);
+}
+
 .masthead h1 {
-  font-size: 2.4rem;
-  margin-top: 4px;
+  font-size: 2.3rem;
+  margin-top: 2px;
+  line-height: 1.15;
 }
 
 .masthead .subtitle {
@@ -97,6 +127,7 @@ h1, h2, h3, h4 {
   font-size: 1.02rem;
 }
 
+/* ---------- карточки ---------- */
 .card {
   background: var(--paper-raised);
   border-radius: var(--radius-lg);
@@ -114,8 +145,8 @@ h1, h2, h3, h4 {
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--gold), transparent);
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--terracotta), transparent);
 }
 
 .card:hover {
@@ -135,8 +166,12 @@ h1, h2, h3, h4 {
   padding-bottom: 14px;
   border-bottom: 1.5px solid var(--paper-line);
   letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
+/* ---------- таблица уроков (десктоп) ---------- */
 table.ledger {
   width: 100%;
   border-collapse: separate;
@@ -188,7 +223,7 @@ table.ledger tr:hover td {
   font-size: 0.8rem;
   font-weight: 700;
   border-radius: 999px;
-  background: rgba(107, 114, 128, 0.12);
+  background: rgba(138, 122, 103, 0.15);
 }
 
 .tag-green {
@@ -229,29 +264,73 @@ button, input, select, textarea {
   font-weight: 700;
   cursor: pointer;
   letter-spacing: 0.01em;
-  box-shadow: 0 8px 20px -8px rgba(22, 24, 31, 0.4);
+  box-shadow: 0 8px 20px -8px rgba(42, 33, 24, 0.45);
   transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
 }
 
 .btn:hover {
-  background: var(--gold);
+  background: var(--gold-dark);
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px -8px rgba(184, 134, 61, 0.55);
+  box-shadow: var(--shadow-pop);
+}
+
+.btn:active {
+  transform: translateY(0);
 }
 
 .btn-secondary {
-  background: rgba(22, 24, 31, 0.06);
+  background: rgba(42, 33, 24, 0.06);
   color: var(--ink);
   border: none;
   border-radius: 999px;
   padding: 11px 22px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
 .btn-secondary:hover {
-  background: rgba(22, 24, 31, 0.12);
+  background: rgba(42, 33, 24, 0.12);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+/* ---------- переключатели статуса (ДЗ / Оплата) ---------- */
+.status-pill {
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.status-pill:active {
+  transform: scale(0.96);
+}
+
+.status-pill-done {
+  background: var(--green-soft);
+  border-color: rgba(63, 125, 92, 0.25);
+  color: var(--green-ink);
+}
+
+.status-pill-done:hover {
+  background: #dcefe2;
+}
+
+.status-pill-pending {
+  background: var(--red-soft);
+  border-color: rgba(179, 69, 58, 0.2);
+  color: var(--red-pen);
+}
+
+.status-pill-pending:hover {
+  background: #f4d9d1;
 }
 
 input[type='text'],
@@ -308,7 +387,7 @@ label {
 .tab {
   padding: 9px 18px;
   border-radius: 999px;
-  background: rgba(22, 24, 31, 0.05);
+  background: rgba(42, 33, 24, 0.05);
   color: var(--ink-soft);
   text-decoration: none;
   font-weight: 700;
@@ -325,7 +404,7 @@ label {
   align-items: center;
   gap: 6px;
   background: var(--gold-soft);
-  color: var(--gold);
+  color: var(--gold-dark);
   padding: 6px 14px;
   transform: rotate(-2deg);
   text-transform: uppercase;
@@ -352,6 +431,19 @@ label {
   font-weight: 600;
 }
 
+.empty-state {
+  text-align: center;
+  padding: 26px 16px;
+  color: var(--ink-soft);
+}
+
+.empty-state-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
 .top-actions {
   display: flex;
   justify-content: space-between;
@@ -359,6 +451,7 @@ label {
   margin-bottom: 20px;
 }
 
+/* ---------- список учеников ---------- */
 .student-list {
   list-style: none;
   padding: 0;
@@ -375,12 +468,44 @@ label {
 
 .student-list a {
   display: flex;
-  justify-content: space-between;
-  padding: 16px 18px;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
   text-decoration: none;
   color: var(--ink);
-  font-weight: 700;
   border-radius: var(--radius-md);
+}
+
+.student-avatar {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--gold-soft);
+  color: var(--gold-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.student-list-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.student-list-name {
+  font-weight: 700;
+  display: block;
+}
+
+.student-list-chevron {
+  flex-shrink: 0;
+  color: var(--ink-soft);
+  opacity: 0.6;
+  transition: transform 0.15s ease;
 }
 
 .student-list li:hover {
@@ -388,8 +513,13 @@ label {
   transform: translateY(-1px);
 }
 
-.student-list a:hover {
-  color: var(--gold);
+.student-list a:hover .student-list-name {
+  color: var(--gold-dark);
+}
+
+.student-list a:hover .student-list-chevron {
+  transform: translateX(3px);
+  opacity: 1;
 }
 
 /* ---------- звёздные оценки (ввод) ---------- */
@@ -412,7 +542,7 @@ label {
   line-height: 1;
   color: var(--paper-line);
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color 0.15s, transform 0.1s;
 }
 
 .star-input input:checked ~ label {
@@ -422,6 +552,7 @@ label {
 .star-input label:hover,
 .star-input label:hover ~ label {
   color: var(--gold);
+  transform: scale(1.08);
 }
 
 /* ---------- звёздные оценки (только просмотр) ---------- */
@@ -653,7 +784,7 @@ label {
 }
 
 .card-danger .card-title {
-  border-bottom-color: var(--red-pen);
+  border-bottom-color: rgba(179, 69, 58, 0.3);
 }
 
 .btn-danger {
@@ -664,37 +795,19 @@ label {
   padding: 12px 26px;
   font-weight: 700;
   cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
 }
 
 .btn-danger:hover {
   opacity: 0.85;
 }
 
-@media (max-width: 640px) {
-  .shell {
-    padding: 32px 16px 70px;
-  }
-  .card {
-    padding: 22px 20px;
-  }
-  table.ledger, table.ledger thead, table.ledger tbody, table.ledger th, table.ledger td, table.ledger tr {
-    display: block;
-  }
-  table.ledger th {
-    display: none;
-  }
-  table.ledger tr {
-    margin-bottom: 10px;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-  }
-  table.ledger td {
-    padding: 6px 14px;
-  }
+.btn-danger:active {
+  transform: scale(0.97);
 }
+
 /* =========================================================
-   Карточки-сводка (StatCard) — короткая статистика по оплате
-   над таблицей уроков.
+   Карточки-сводка (StatCard)
    ========================================================= */
 .stats-row {
   display: grid;
@@ -728,7 +841,7 @@ label {
 }
 
 .stat-card-gold .stat-card-value {
-  color: var(--gold);
+  color: var(--gold-dark);
 }
 
 .stat-card-green .stat-card-value {
@@ -736,7 +849,7 @@ label {
 }
 
 .stat-card-red {
-  border-color: var(--red-soft);
+  border-color: rgba(179, 69, 58, 0.25);
   background: var(--red-soft);
 }
 
@@ -786,6 +899,12 @@ table.ledger tr.lesson-edit-row td {
   background: var(--paper) !important;
   border-radius: var(--radius-sm);
   padding: 24px 26px;
+  animation: edit-row-in 0.16s ease;
+}
+
+@keyframes edit-row-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .lesson-edit-form .field {
@@ -826,10 +945,312 @@ table.ledger tr.lesson-edit-row td {
   line-height: 1.4;
 }
 
+fieldset.form-section {
+  border: none;
+  padding: 0;
+  margin: 0 0 22px;
+}
+
+fieldset.form-section legend {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: normal;
+  padding: 0 0 10px;
+  width: 100%;
+  border-bottom: 1px dashed var(--paper-line);
+  margin-bottom: 14px;
+}
+
+/* =========================================================
+   Лента уроков для родителя — карточки вместо таблицы,
+   удобнее листать с телефона.
+   ========================================================= */
+.lesson-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lesson-card {
+  display: flex;
+  gap: 16px;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+}
+
+.lesson-card-date {
+  flex-shrink: 0;
+  width: 64px;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.lesson-card-day {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--gold-dark);
+  line-height: 1.2;
+}
+
+.lesson-card-sub {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  text-transform: capitalize;
+  font-weight: 700;
+}
+
+.lesson-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.lesson-card-topic {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+
+.lesson-card-meta {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.lesson-card-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lesson-card-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.badge-done {
+  background: var(--green-soft);
+  color: var(--green-ink);
+}
+
+.badge-pending {
+  background: var(--red-soft);
+  color: var(--red-pen);
+}
+
+/* =========================================================
+   Вход / регистрация
+   ========================================================= */
+.auth-shell {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 64px 20px 60px;
+}
+
+.auth-card {
+  background: var(--paper-raised);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 40px 34px;
+  text-align: center;
+}
+
+.auth-brand {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.7rem;
+  margin: 0 auto 18px;
+  box-shadow: var(--shadow-pop);
+}
+
+.auth-card h1 {
+  font-size: 1.7rem;
+  margin-bottom: 26px;
+}
+
+.auth-card form {
+  text-align: left;
+}
+
+.auth-switch {
+  display: flex;
+  background: var(--paper);
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 26px;
+}
+
+.auth-switch a {
+  flex: 1;
+  text-align: center;
+  padding: 9px 10px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.auth-switch a.active {
+  background: var(--ink);
+  color: #fff;
+}
+
+.auth-note {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   Мобильная адаптация: таблицы превращаются в карточки,
+   у каждой ячейки подпись берётся из data-label,
+   так что контекст не теряется.
+   ========================================================= */
+@media (max-width: 640px) {
+  .shell {
+    padding: 28px 14px 70px;
+  }
+
+  .card {
+    padding: 22px 18px;
+  }
+
+  .masthead h1 {
+    font-size: 1.9rem;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  table.ledger,
+  table.ledger thead,
+  table.ledger tbody,
+  table.ledger th,
+  table.ledger td,
+  table.ledger tr {
+    display: block;
+  }
+
+  table.ledger thead {
+    display: none;
+  }
+
+  table.ledger tbody tr {
+    margin-bottom: 12px;
+    border-radius: var(--radius-md) !important;
+    overflow: hidden;
+    background: var(--paper);
+    border: 1px solid var(--paper-line);
+    padding: 4px 0;
+  }
+
+  table.ledger tbody tr:nth-child(odd) td {
+    background: transparent;
+  }
+
+  table.ledger td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 16px;
+    border-radius: 0 !important;
+    text-align: right;
+  }
+
+  table.ledger td::before {
+    content: attr(data-label);
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+  }
+
+  table.ledger td.date-cell {
+    background: var(--gold-soft) !important;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  table.ledger td.date-cell::before {
+    content: none;
+  }
+
+  table.ledger td.actions-cell {
+    justify-content: center;
+    padding: 10px 16px 14px;
+  }
+
+  table.ledger td.actions-cell::before {
+    content: none;
+  }
+
+  table.ledger td.actions-cell .edit-btn {
+    width: auto;
+    border-radius: 999px;
+    padding: 8px 20px;
+  }
+
+  table.ledger td.actions-cell .edit-btn::after {
+    content: ' Редактировать';
+  }
+
+  table.ledger tr.lesson-edit-row {
+    border: none;
+    background: transparent;
+  }
+
+  table.ledger tr.lesson-edit-row td {
+    display: block;
+    background: var(--paper-raised) !important;
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius-md);
+    padding: 20px 16px;
+  }
+
+  .lesson-card {
+    padding: 14px;
+    gap: 12px;
+  }
+}
+
 /* =========================================================
    Подпись автора сайта — аккуратный «водяной знак» внизу справа.
-   На мобильных превращается в обычную строку внизу страницы,
-   чтобы не перекрывать контент.
    ========================================================= */
 .site-signature {
   position: fixed;
@@ -856,7 +1277,7 @@ table.ledger tr.lesson-edit-row td {
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--gold-soft);
-  color: var(--gold);
+  color: var(--gold-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -890,7 +1311,7 @@ table.ledger tr.lesson-edit-row td {
   border-radius: 999px;
   font-weight: 700;
   font-size: 0.92rem;
-  box-shadow: 0 12px 28px -10px rgba(22, 24, 31, 0.5);
+  box-shadow: 0 12px 28px -10px rgba(42, 33, 24, 0.55);
   z-index: 1000;
   animation: toast-in 0.2s ease;
 }
