@@ -12,7 +12,7 @@ const initialState = { ok: false, ts: 0 };
 // чекбокс — из-за этого сохранение иногда работало ненадёжно.
 // Теперь это обычный React-компонент с состоянием — открытие панели
 // и сохранение изменений работают предсказуемо в любом браузере.
-export function LessonRow({ lesson: l, payment, dateParts, action, toggleHomeworkAction }) {
+export function LessonRow({ lesson: l, payment, dateParts, action, toggleHomeworkAction, togglePaymentAction }) {
   const [open, setOpen] = useState(false);
   const [state, formAction] = useFormState(action, initialState);
   const lastTs = useRef(0);
@@ -67,12 +67,26 @@ export function LessonRow({ lesson: l, payment, dateParts, action, toggleHomewor
           </form>
         </td>
         <td>
-          {payment?.paid ? (
-            <span className="check">✓ {payment.amount ? `${payment.amount} ₽` : 'Оплачено'}</span>
+          {payment?.id ? (
+            <form action={togglePaymentAction}>
+              <input type="hidden" name="paymentId" value={payment.id} />
+              <input type="hidden" name="nextValue" value={(!payment.paid).toString()} />
+              <button
+                type="submit"
+                className="btn-secondary"
+                style={{ padding: '2px 10px', fontSize: '0.85rem' }}
+              >
+                {payment.paid ? (
+                  <span className="check">✓ {payment.amount ? `${payment.amount} ₽` : 'оплачено'}</span>
+                ) : (
+                  <span className="cross">
+                    {payment.amount ? `${payment.amount} ₽ · не оплачено` : '— не оплачено'}
+                  </span>
+                )}
+              </button>
+            </form>
           ) : (
-            <span className="cross">
-              {payment?.amount ? `${payment.amount} ₽ · не оплачено` : 'Не оплачено'}
-            </span>
+            <span className="muted">—</span>
           )}
         </td>
         <td className="actions-cell">
