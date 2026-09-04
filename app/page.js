@@ -91,7 +91,9 @@ export default async function ParentPage() {
             </thead>
             <tbody>
               {lessons.map((l) => {
-                const payment = l.payments?.[0];
+                // payments.lesson_id уникальный, поэтому Supabase отдаёт эту связь
+                // как один объект, а не массив.
+                const payment = l.payments;
                 return (
                   <tr key={l.id}>
                     <td>{l.lesson_date}</td>
