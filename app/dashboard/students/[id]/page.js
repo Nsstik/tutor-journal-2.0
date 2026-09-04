@@ -6,6 +6,7 @@ import {
   addLesson,
   updateLessonFull,
   toggleHomework,
+  togglePaid,
   addTopic,
   addTopicsBulk,
   toggleTopic,
@@ -83,6 +84,7 @@ export default async function StudentPage({ params, searchParams }) {
   const addLessonAction = addLesson.bind(null, studentId);
   const updateLessonFullAction = updateLessonFull.bind(null, studentId);
   const toggleHomeworkAction = toggleHomework.bind(null, studentId);
+  const togglePaymentAction = togglePaid.bind(null, studentId);
   const addTopicAction = addTopic.bind(null, studentId);
   const addTopicsBulkAction = addTopicsBulk.bind(null, studentId);
   const toggleTopicAction = toggleTopic.bind(null, studentId);
@@ -164,6 +166,7 @@ export default async function StudentPage({ params, searchParams }) {
                     dateParts={dateParts}
                     action={updateLessonFullAction}
                     toggleHomeworkAction={toggleHomeworkAction}
+                    togglePaymentAction={togglePaymentAction}
                   />
                 );
               })}
