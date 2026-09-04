@@ -33,11 +33,13 @@ export default async function DashboardPage() {
       <div className="card">
         <div className="card-title">Ученики</div>
         {students && students.length > 0 ? (
-          <ul className="student-list">
+                    <ul className="student-list">
             {students.map((s) => (
               <li key={s.id}>
                 <a href={`/dashboard/students/${s.id}`}>
-                  <span>{s.full_name}</span>
+                  <span className="student-list-info">
+                    <span className="student-list-name">{s.full_name}</span>
+                  </span>
                   <span className="muted">{s.subject}</span>
                 </a>
               </li>
