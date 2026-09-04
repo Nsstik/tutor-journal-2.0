@@ -1,3 +1,107 @@
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
+import { signOut } from '@/app/dashboard/actions';
+import { TrendChart, HomeworkChart, StarsDisplay } from '@/lib/trend-chart';
+import { WEEKDAY_NAMES, formatTime, sortByNextOccurrence } from '@/lib/schedule';
+
+export default async function ParentPage() {
+  const supabase = createClient();
+
+  let user = null;
+  try {
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
+    user = authUser;
+  } catch (error) {
+    // Битый/просроченный refresh-токен — считаем, что пользователь не залогинен
+    console.error('Auth error on home page:', error?.message);
+    user = null;
+  }
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, student_id, show_payment')
+    .eq('id', user.id)
+    .single();
+
+  // Репетитор попал на главную (родительскую) страницу — уводим в его панель.
+  if (profile?.role === 'repetitor') {
+    redirect('/dashboard');
+  }
+
+  if (!profile?.student_id) {
+    return (
+      <div className="shell">
+        <p className="muted">Доступ ещё не настроен. Обратитесь к репетитору.</p>
+      </div>
+    );
+  }
+
+  const { data: student } = await supabase
+    .from('students')
+    .select('full_name, subject')
+    .eq('id', profile.student_id)
+    .single();
+
+  const { data: lessons } = await supabase
+    .from('lessons')
+    .select('*, payments(*)')
+    .eq('student_id', profile.student_id)
+    .order('lesson_date', { ascending: false });
+
+  const { data: topics } = await supabase
+    .from('topics_to_review')
+    .select('*')
+    .eq('student_id', profile.student_id)
+    .order('created_at', { ascending: true });
+
+  const { data: schedule } = await supabase
+    .from('schedule_slots')
+    .select('*')
+    .eq('student_id', profile.student_id);
+
+  const sortedSchedule = sortByNextOccurrence(schedule);
+
+  const topicsDone = (topics || []).filter((t) => t.done).length;
+  const topicsTotal = (topics || []).length;
+  const topicsPercent = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;
+
+  return (
+    <div className="shell">
+      <div className="masthead">
+        <h1>{student?.full_name}</h1>
+        <div className="masthead-right">
+          <div className="eyebrow eyebrow-right">{student?.subject}</div>
+          <form action={signOut}>
+            <button className="btn-secondary" type="submit">Выйти</button>
+          </form>
+        </div>
+      </div>
+
+      {/* ------------------- РАСПИСАНИЕ ------------------- */}
+      <div className="card">
+        <div className="card-title">Расписание занятий</div>
+        {sortedSchedule.length > 0 ? (
+          <div className="schedule-list">
+            {sortedSchedule.map((s, idx) => (
+              <div key={s.id} className={`schedule-row-static ${idx === 0 ? 'schedule-row-next' : ''}`}>
+                <span>
+                  {WEEKDAY_NAMES[s.weekday]}, {formatTime(s.time_of_day)}
+                </span>
+                {idx === 0 && <span className="schedule-next-tag">Ближайшее</span>}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="muted">Расписание пока не назначено.</p>
+        )}
+      </div>
+
       <div className="card">
         <div className="card-title">Уроки</div>
         {lessons && lessons.length > 0 ? (
@@ -16,6 +120,8 @@
                 </thead>
                 <tbody>
                   {lessons.map((l) => {
+                    // payments.lesson_id уникальный, поэтому Supabase отдаёт эту связь
+                    // как один объект, а не массив.
                     const payment = l.payments;
                     return (
                       <tr key={l.id}>
@@ -119,3 +225,49 @@
           <p className="muted">Уроков пока нет.</p>
         )}
       </div>
+
+      <div className="card card-chart">
+        <div className="card-title">Динамика по урокам</div>
+        <TrendChart lessons={lessons || []} />
+      </div>
+
+      <div className="card card-chart">
+        <div className="card-title">Выполнение ДЗ</div>
+        <HomeworkChart lessons={lessons || []} />
+      </div>
+
+      <div className="card">
+        <div className="card-title">Темы 📚</div>
+
+        {topicsTotal > 0 && (
+          <div className="topics-progress">
+            <div className="topics-progress-bar">
+              <div className="topics-progress-fill" style={{ width: `${topicsPercent}%` }} />
+            </div>
+            <span className="muted">
+              Пройдено {topicsDone} из {topicsTotal} ({topicsPercent}%)
+            </span>
+          </div>
+        )}
+
+        {topics && topics.length > 0 ? (
+          <div className="topic-list">
+            {topics.map((t) => (
+              <div
+                key={t.id}
+                className={`topic-row topic-row-static ${
+                  t.done ? 'topic-row-done' : 'topic-row-pending'
+                }`}
+              >
+                <span className="topic-row-check">{t.done ? '✅' : '⬜️'}</span>
+                <span className="topic-row-text">{t.topic}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="muted">Список пуст.</p>
+        )}
+      </div>
+    </div>
+  );
+}
