@@ -1450,3 +1450,14 @@ fieldset.form-section legend {
 .eyebrow-right {
   text-align: right;
 }
+
+.student-list a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 18px;
+  text-decoration: none;
+  color: var(--ink);
+  border-radius: var(--radius-md);
+}
