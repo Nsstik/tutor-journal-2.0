@@ -66,28 +66,25 @@ export function LessonRow({ lesson: l, payment, dateParts, action, toggleHomewor
             </button>
           </form>
         </td>
-        <td>
-          {payment?.id ? (
-            <form action={togglePaymentAction}>
-              <input type="hidden" name="paymentId" value={payment.id} />
-              <input type="hidden" name="nextValue" value={(!payment.paid).toString()} />
-              <button
-                type="submit"
-                className="btn-secondary"
-                style={{ padding: '2px 10px', fontSize: '0.85rem' }}
-              >
-                {payment.paid ? (
-                  <span className="check">✓ {payment.amount ? `${payment.amount} ₽` : 'оплачено'}</span>
-                ) : (
-                  <span className="cross">
-                    {payment.amount ? `${payment.amount} ₽ · не оплачено` : '— не оплачено'}
-                  </span>
-                )}
-              </button>
-            </form>
-          ) : (
-            <span className="muted">—</span>
-          )}
+                <td>
+          <form action={togglePaymentAction}>
+            <input type="hidden" name="lessonId" value={l.id} />
+            {payment?.id && <input type="hidden" name="paymentId" value={payment.id} />}
+            <input type="hidden" name="nextValue" value={(!payment?.paid).toString()} />
+            <button
+              type="submit"
+              className="btn-secondary"
+              style={{ padding: '2px 10px', fontSize: '0.85rem' }}
+            >
+              {payment?.paid ? (
+                <span className="check">✓ {payment.amount ? `${payment.amount} ₽` : 'оплачено'}</span>
+              ) : (
+                <span className="cross">
+                  {payment?.amount ? `${payment.amount} ₽ · не оплачено` : '— не оплачено'}
+                </span>
+              )}
+            </button>
+          </form>
         </td>
         <td className="actions-cell">
           <button
