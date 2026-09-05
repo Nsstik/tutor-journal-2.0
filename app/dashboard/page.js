@@ -115,11 +115,12 @@ export default async function DashboardPage({ searchParams }) {
             </form>
           </div>
 
-          {myTutors && myTutors.length > 0 && (
-            <details className="card">
-              <summary className="card-title" style={{ cursor: 'pointer' }}>
-                Выданные доступы ({myTutors.length})
-              </summary>
+          <details className="card">
+            <summary className="card-title" style={{ cursor: 'pointer' }}>
+              Выданные доступы ({myTutors?.length || 0})
+            </summary>
+
+            {myTutors && myTutors.length > 0 ? (
               <ul className="student-list" style={{ marginTop: 14 }}>
                 {myTutors.map((t) => (
                   <li key={t.id} style={{ display: 'flex' }}>
@@ -150,8 +151,10 @@ export default async function DashboardPage({ searchParams }) {
                   </li>
                 ))}
               </ul>
-            </details>
-          )}
+            ) : (
+              <p className="muted" style={{ marginTop: 14 }}>Пока никого нет.</p>
+            )}
+          </details>
         </>
       )}
     </div>
