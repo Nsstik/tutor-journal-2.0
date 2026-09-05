@@ -146,3 +146,14 @@ export default async function DashboardPage({ searchParams }) {
                           {t.is_active ? 'Заблокировать' : 'Разблокировать'}
                         </button>
                       </form>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
