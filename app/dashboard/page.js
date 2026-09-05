@@ -1,5 +1,12 @@
 import { createClient } from '@/lib/supabase/server';
-import { addStudent, signOut, createTutorAccount, toggleTutorActive } from './actions';
+import {
+  addStudent,
+  signOut,
+  createTutorAccount,
+  toggleTutorActive,
+  deleteTutorAccount,
+} from './actions';
+import { ConfirmButton } from '@/components/ConfirmButton';
 
 export default async function DashboardPage({ searchParams }) {
   const supabase = createClient();
@@ -132,6 +139,7 @@ export default async function DashboardPage({ searchParams }) {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         gap: 14,
+                        flexWrap: 'wrap',
                       }}
                     >
                       <div>
@@ -140,13 +148,24 @@ export default async function DashboardPage({ searchParams }) {
                           {t.is_active ? 'Активен' : 'Заблокирован'}
                         </div>
                       </div>
-                      <form action={toggleTutorActive}>
-                        <input type="hidden" name="tutorId" value={t.id} />
-                        <input type="hidden" name="nextActive" value={(!t.is_active).toString()} />
-                        <button type="submit" className={t.is_active ? 'btn-danger' : 'btn-secondary'}>
-                          {t.is_active ? 'Заблокировать' : 'Разблокировать'}
-                        </button>
-                      </form>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <form action={toggleTutorActive}>
+                          <input type="hidden" name="tutorId" value={t.id} />
+                          <input type="hidden" name="nextActive" value={(!t.is_active).toString()} />
+                          <button type="submit" className={t.is_active ? 'btn-danger' : 'btn-secondary'}>
+                            {t.is_active ? 'Заблокировать' : 'Разблокировать'}
+                          </button>
+                        </form>
+                        <form action={deleteTutorAccount}>
+                          <input type="hidden" name="tutorId" value={t.id} />
+                          <ConfirmButton
+                            className="btn-danger"
+                            confirmMessage={`Удалить аккаунт «${t.full_name}» вместе со всеми его учениками, уроками и оплатами? Это необратимо.`}
+                          >
+                            Удалить
+                          </ConfirmButton>
+                        </form>
+                      </div>
                     </div>
                   </li>
                 ))}
