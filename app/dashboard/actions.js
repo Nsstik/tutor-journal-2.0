@@ -39,6 +39,16 @@ export async function createTutorAccount(formData) {
   } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
+  const { data: callerProfile } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', user.id)
+    .single();
+
+  if (!callerProfile?.is_admin) {
+    redirect('/dashboard?error=' + encodeURIComponent('Только главный репетитор может создавать аккаунты репетиторов'));
+  }
+
   const email = formData.get('tutorEmail');
   const fullName = formData.get('tutorName');
   const tempPassword = Math.random().toString(36).slice(-5) + Math.random().toString(36).slice(-5);
@@ -58,6 +68,7 @@ export async function createTutorAccount(formData) {
     id: data.user.id,
     role: 'repetitor',
     full_name: fullName,
+    is_admin: false,
   });
 
   if (profileError) {
