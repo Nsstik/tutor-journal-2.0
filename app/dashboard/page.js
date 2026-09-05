@@ -9,7 +9,7 @@ export default async function DashboardPage({ searchParams }) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name')
+    .select('full_name, is_admin')
     .eq('id', user.id)
     .single();
 
@@ -84,26 +84,28 @@ export default async function DashboardPage({ searchParams }) {
         </form>
       </div>
 
-      <div className="card">
-        <div className="card-title">Выдать доступ репетитору</div>
-        <p className="muted" style={{ marginBottom: 14 }}>
-          Создайте отдельный аккаунт для другого репетитора — у него будет своя база
-          учеников, полностью независимая от вашей.
-        </p>
-        <form action={createTutorAccount}>
-          <div className="form-row">
-            <div className="field">
-              <label htmlFor="tutorName">Имя репетитора</label>
-              <input id="tutorName" name="tutorName" type="text" required />
+      {profile?.is_admin && (
+        <div className="card">
+          <div className="card-title">Выдать доступ репетитору</div>
+          <p className="muted" style={{ marginBottom: 14 }}>
+            Создайте отдельный аккаунт для другого репетитора — у него будет своя база
+            учеников, полностью независимая от вашей.
+          </p>
+          <form action={createTutorAccount}>
+            <div className="form-row">
+              <div className="field">
+                <label htmlFor="tutorName">Имя репетитора</label>
+                <input id="tutorName" name="tutorName" type="text" required />
+              </div>
+              <div className="field">
+                <label htmlFor="tutorEmail">E-mail</label>
+                <input id="tutorEmail" name="tutorEmail" type="email" required />
+              </div>
             </div>
-            <div className="field">
-              <label htmlFor="tutorEmail">E-mail</label>
-              <input id="tutorEmail" name="tutorEmail" type="email" required />
-            </div>
-          </div>
-          <button className="btn-secondary" type="submit">Создать аккаунт репетитора</button>
-        </form>
-      </div>
+            <button className="btn-secondary" type="submit">Создать аккаунт репетитора</button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
