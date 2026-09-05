@@ -83,6 +83,10 @@ export async function createTutorAccount(formData) {
 
 // Блокировка/разблокировка входа для репетитора, которого вы создали.
 // Данные (ученики, уроки) не удаляются — он просто не сможет войти.
+//
+// Важно: обновление идёт через административный клиент, потому что
+// обычному клиенту это запрещает RLS-политика "обновлять свой профиль"
+// (id = auth.uid()) — именно из-за неё кнопка раньше молча не работала.
 export async function toggleTutorActive(formData) {
   const supabase = createClient();
   const {
@@ -103,12 +107,60 @@ export async function toggleTutorActive(formData) {
   const tutorId = formData.get('tutorId');
   const nextActive = formData.get('nextActive') === 'true';
 
-  // Дополнительная защита: обновляем только тех, кого создали именно вы.
-  await supabase
+  const admin = createAdminClient();
+
+  // Проверяем, что меняем именно того, кого сами создали.
+  const { data: targetProfile } = await admin
     .from('profiles')
-    .update({ is_active: nextActive })
+    .select('id, created_by')
     .eq('id', tutorId)
-    .eq('created_by', user.id);
+    .single();
+
+  if (!targetProfile || targetProfile.created_by !== user.id) {
+    redirect('/dashboard?error=' + encodeURIComponent('Недостаточно прав'));
+  }
+
+  await admin.from('profiles').update({ is_active: nextActive }).eq('id', tutorId);
+
+  revalidatePath('/dashboard');
+}
+
+// Полное удаление аккаунта репетитора вместе со всеми его учениками,
+// уроками, оплатами, темами и расписанием. Действие необратимо.
+export async function deleteTutorAccount(formData) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const { data: callerProfile } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', user.id)
+    .single();
+
+  if (!callerProfile?.is_admin) {
+    redirect('/dashboard?error=' + encodeURIComponent('Недостаточно прав'));
+  }
+
+  const tutorId = formData.get('tutorId');
+  const admin = createAdminClient();
+
+  const { data: targetProfile } = await admin
+    .from('profiles')
+    .select('id, created_by')
+    .eq('id', tutorId)
+    .single();
+
+  if (!targetProfile || targetProfile.created_by !== user.id) {
+    redirect('/dashboard?error=' + encodeURIComponent('Можно удалять только созданные вами аккаунты'));
+  }
+
+  // Удаление пользователя из Auth каскадно удалит его профиль
+  // (profiles.id -> auth.users.id on delete cascade), а вместе с профилем —
+  // всех его учеников, уроки, оплаты, темы и расписание (там тоже cascade).
+  await admin.auth.admin.deleteUser(tutorId);
 
   revalidatePath('/dashboard');
 }
