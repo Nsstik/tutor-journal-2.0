@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
-import { addStudent, signOut } from './actions';
+import { addStudent, signOut, createTutorAccount } from './actions';
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }) {
   const supabase = createClient();
   const {
     data: { user },
@@ -30,10 +30,27 @@ export default async function DashboardPage() {
         </form>
       </div>
 
+      {searchParams?.error && <p className="error-text">{searchParams.error}</p>}
+
+      {searchParams?.newTutorEmail && searchParams?.newTutorPassword && (
+        <div className="card" style={{ borderColor: 'var(--gold)' }}>
+          <span className="stamp">Аккаунт репетитора создан</span>
+          <p style={{ marginTop: 12 }}>
+            Логин: <strong>{searchParams.newTutorEmail}</strong>
+            <br />
+            Временный пароль: <strong>{searchParams.newTutorPassword}</strong>
+          </p>
+          <p className="muted" style={{ marginTop: 8 }}>
+            Передайте эти данные репетитору — у него будет полностью своя,
+            отдельная база учеников, вы её не увидите.
+          </p>
+        </div>
+      )}
+
       <div className="card">
         <div className="card-title">Ученики</div>
         {students && students.length > 0 ? (
-                    <ul className="student-list">
+          <ul className="student-list">
             {students.map((s) => (
               <li key={s.id}>
                 <a href={`/dashboard/students/${s.id}`}>
@@ -60,10 +77,31 @@ export default async function DashboardPage() {
             </div>
             <div className="field">
               <label htmlFor="subject">Предмет</label>
-              <input id="subject" name="subject" type="text" defaultValue="Математика" />
+              <input id="subject" name="subject" defaultValue="Математика" />
             </div>
           </div>
           <button className="btn" type="submit">Добавить</button>
+        </form>
+      </div>
+
+      <div className="card">
+        <div className="card-title">Выдать доступ репетитору</div>
+        <p className="muted" style={{ marginBottom: 14 }}>
+          Создайте отдельный аккаунт для другого репетитора — у него будет своя база
+          учеников, полностью независимая от вашей.
+        </p>
+        <form action={createTutorAccount}>
+          <div className="form-row">
+            <div className="field">
+              <label htmlFor="tutorName">Имя репетитора</label>
+              <input id="tutorName" name="tutorName" type="text" required />
+            </div>
+            <div className="field">
+              <label htmlFor="tutorEmail">E-mail</label>
+              <input id="tutorEmail" name="tutorEmail" type="email" required />
+            </div>
+          </div>
+          <button className="btn-secondary" type="submit">Создать аккаунт репетитора</button>
         </form>
       </div>
     </div>
