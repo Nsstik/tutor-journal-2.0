@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function signOut() {
   const supabase = createClient();
@@ -28,7 +29,6 @@ export async function addStudent(formData) {
 
   revalidatePath('/dashboard');
 }
-import { createAdminClient } from '@/lib/supabase/admin';
 
 // Создание аккаунта ещё одного репетитора. Он получит полностью свою,
 // отдельную базу учеников — доступ к вашим данным у него не появится.
