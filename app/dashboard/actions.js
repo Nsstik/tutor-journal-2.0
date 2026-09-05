@@ -69,6 +69,7 @@ export async function createTutorAccount(formData) {
     role: 'repetitor',
     full_name: fullName,
     is_admin: false,
+    created_by: user.id,
   });
 
   if (profileError) {
@@ -78,4 +79,36 @@ export async function createTutorAccount(formData) {
   redirect(
     `/dashboard?newTutorEmail=${encodeURIComponent(email)}&newTutorPassword=${encodeURIComponent(tempPassword)}`
   );
+}
+
+// Блокировка/разблокировка входа для репетитора, которого вы создали.
+// Данные (ученики, уроки) не удаляются — он просто не сможет войти.
+export async function toggleTutorActive(formData) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const { data: callerProfile } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', user.id)
+    .single();
+
+  if (!callerProfile?.is_admin) {
+    redirect('/dashboard?error=' + encodeURIComponent('Недостаточно прав'));
+  }
+
+  const tutorId = formData.get('tutorId');
+  const nextActive = formData.get('nextActive') === 'true';
+
+  // Дополнительная защита: обновляем только тех, кого создали именно вы.
+  await supabase
+    .from('profiles')
+    .update({ is_active: nextActive })
+    .eq('id', tutorId)
+    .eq('created_by', user.id);
+
+  revalidatePath('/dashboard');
 }
