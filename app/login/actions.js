@@ -10,12 +10,6 @@ export async function signIn(formData) {
   const supabase = createClient();
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  export async function signIn(formData) {
-  const email = formData.get('email');
-  const password = formData.get('password');
-  const supabase = createClient();
-
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     redirect('/login?error=' + encodeURIComponent('Неверный e-mail или пароль'));
@@ -34,13 +28,6 @@ export async function signIn(formData) {
   if (profile && profile.is_active === false) {
     await supabase.auth.signOut();
     redirect('/login?error=' + encodeURIComponent('Доступ заблокирован. Обратитесь к администратору.'));
-  }
-
-  redirect('/dashboard');
-}
-
-  if (error) {
-    redirect('/login?error=' + encodeURIComponent('Неверный e-mail или пароль'));
   }
 
   redirect('/dashboard');
