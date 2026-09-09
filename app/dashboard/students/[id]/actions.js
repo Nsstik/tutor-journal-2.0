@@ -309,9 +309,21 @@ export async function deleteStudent(studentId) {
   const supabase = createClient();
   await assertOwnsStudent(supabase, studentId);
 
-  const { error } = await supabase.from('students').delete().eq('id', studentId);
+  const { data, error } = await supabase
+    .from('students')
+    .delete()
+    .eq('id', studentId)
+    .select('id');
+
   if (error) throw error;
 
+  // Если по какой-то причине ни одна строка не удалилась (например, право
+  // доступа не совпало) — не делаем вид, что всё прошло успешно.
+  if (!data || data.length === 0) {
+    throw new Error('Не удалось удалить ученика — проверьте права доступа.');
+  }
+
+  revalidatePath('/dashboard');
   redirect('/dashboard');
 }
 
