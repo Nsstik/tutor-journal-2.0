@@ -357,27 +357,19 @@ export default async function StudentPage({ params, searchParams }) {
           <button className="btn" type="submit">Создать доступ</button>
         </form>
       </div>
-
       {/* ------------------- УДАЛЕНИЕ УЧЕНИКА ------------------- */}
       <div className="card card-danger">
         <div className="card-title">Опасная зона</div>
-        {searchParams?.confirmDelete ? (
-          <>
-            <p>
-              Точно удалить ученика <strong>{student.full_name}</strong>? Все его уроки, темы и
-              история оценок будут удалены безвозвратно. Это действие нельзя отменить.
-            </p>
-            <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
-              <form action={deleteStudentAction}>
-                <button type="submit" className="btn-danger">Да, удалить навсегда</button>
-              </form>
-              <a href={`/dashboard/students/${studentId}`} className="btn-secondary" style={{ textDecoration: 'none' }}>Отмена</a>
-            </div>
-          </>
-        ) : (
-          <a href={`/dashboard/students/${studentId}?confirmDelete=1`} className="btn-danger" style={{ textDecoration: 'none', display: 'inline-block' }}>Удалить ученика</a>
-        )}
+        <p className="muted" style={{ marginBottom: 14 }}>
+          Удаление необратимо: вместе с учеником пропадут все его уроки, темы и история оценок.
+        </p>
+        <form action={deleteStudentAction}>
+          <ConfirmButton
+            className="btn-danger"
+            confirmMessage={`Точно удалить ученика «${student.full_name}»? Все его уроки, темы и история оценок будут удалены безвозвратно. Это действие нельзя отменить.`}
+          >
+            Удалить ученика
+          </ConfirmButton>
+        </form>
       </div>
-    </div>
-  );
-}
+import { ConfirmButton } from '@/components/ConfirmButton';
