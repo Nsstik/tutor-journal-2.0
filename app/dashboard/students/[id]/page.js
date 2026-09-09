@@ -3,6 +3,7 @@ import { TrendChart, HomeworkChart } from '@/lib/trend-chart';
 import { AddLessonForm } from '@/components/AddLessonForm';
 import { LessonRow } from '@/components/LessonRow';
 import { ScheduleManager } from '@/components/ScheduleManager';
+import { ConfirmButton } from '@/components/ConfirmButton';
 import {
   addLesson,
   updateLessonFull,
@@ -118,7 +119,7 @@ export default async function StudentPage({ params, searchParams }) {
 
   return (
     <div className="shell">
-            <div className="masthead">
+      <div className="masthead">
         <h1>{student.full_name}</h1>
         <div className="masthead-right">
           <div className="eyebrow eyebrow-right">{student.subject}</div>
@@ -357,6 +358,7 @@ export default async function StudentPage({ params, searchParams }) {
           <button className="btn" type="submit">Создать доступ</button>
         </form>
       </div>
+
       {/* ------------------- УДАЛЕНИЕ УЧЕНИКА ------------------- */}
       <div className="card card-danger">
         <div className="card-title">Опасная зона</div>
@@ -372,4 +374,6 @@ export default async function StudentPage({ params, searchParams }) {
           </ConfirmButton>
         </form>
       </div>
-import { ConfirmButton } from '@/components/ConfirmButton';
+    </div>
+  );
+}
