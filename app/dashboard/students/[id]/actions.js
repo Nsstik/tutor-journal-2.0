@@ -155,6 +155,45 @@ export async function updateLessonFull(studentId, prevState, formData) {
   return { ok: true, ts: Date.now() };
 }
 
+// Удаление урока. Запись оплаты этого урока удаляется автоматически
+// (payments.lesson_id -> lessons.id on delete cascade).
+export async function deleteLesson(studentId, formData) {
+  const supabase = createClient();
+  await assertOwnsStudent(supabase, studentId);
+
+  const lessonId = formData.get('lessonId');
+  if (!lessonId) return;
+
+  const { data, error } = await supabase
+    .from('lessons')
+    .delete()
+    .eq('id', lessonId)
+    .eq('student_id', studentId)
+    .select('id');
+
+  if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error('Не удалось удалить урок — проверьте права доступа.');
+  }
+
+  revalidatePath(`/dashboard/students/${studentId}`);
+}
+
+// Переименование ученика.
+export async function updateStudentName(studentId, formData) {
+  const supabase = createClient();
+  await assertOwnsStudent(supabase, studentId);
+
+  const full_name = (formData.get('full_name') || '').trim();
+  if (!full_name) return;
+
+  const { error } = await supabase.from('students').update({ full_name }).eq('id', studentId);
+  if (error) throw error;
+
+  revalidatePath(`/dashboard/students/${studentId}`);
+  revalidatePath('/dashboard');
+}
+
 export async function toggleHomework(studentId, formData) {
   const supabase = createClient();
   await assertOwnsStudent(supabase, studentId);

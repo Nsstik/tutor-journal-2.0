@@ -12,7 +12,15 @@ const initialState = { ok: false, ts: 0 };
 // чекбокс — из-за этого сохранение иногда работало ненадёжно.
 // Теперь это обычный React-компонент с состоянием — открытие панели
 // и сохранение изменений работают предсказуемо в любом браузере.
-export function LessonRow({ lesson: l, payment, dateParts, action, toggleHomeworkAction, togglePaymentAction }) {
+export function LessonRow({
+  lesson: l,
+  payment,
+  dateParts,
+  action,
+  toggleHomeworkAction,
+  togglePaymentAction,
+  deleteLessonAction,
+}) {
   const [open, setOpen] = useState(false);
   const [state, formAction] = useFormState(action, initialState);
   const lastTs = useRef(0);
@@ -204,6 +212,27 @@ export function LessonRow({ lesson: l, payment, dateParts, action, toggleHomewor
                 <button type="button" className="btn-secondary" onClick={() => setOpen(false)}>
                   Отмена
                 </button>
+                {deleteLessonAction && (
+                  <button
+                    type="submit"
+                    className="btn-danger lesson-delete-btn"
+                    formAction={deleteLessonAction}
+                    formNoValidate
+                    onClick={(e) => {
+                      if (
+                        !window.confirm(
+                          `Удалить урок от ${dateParts.day} ${dateParts.rest}${
+                            l.topic ? ` («${l.topic}»)` : ''
+                          }? Это действие нельзя отменить.`
+                        )
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
+                    Удалить урок
+                  </button>
+                )}
               </div>
             </form>
           </td>

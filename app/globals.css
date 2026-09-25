@@ -1468,3 +1468,30 @@ fieldset.form-section legend {
   color: var(--ink);
   border-radius: var(--radius-md);
 }
+
+/* ---------- имя ученика: просмотр / редактирование ---------- */
+.student-name-view {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-name-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.student-name-form input {
+  flex: 1;
+  min-width: 200px;
+  font-size: 1.3rem;
+}
+
+/* ---------- кнопка «Удалить урок» в панели редактирования ---------- */
+.lesson-edit-actions .lesson-delete-btn {
+  margin-left: auto;
+}

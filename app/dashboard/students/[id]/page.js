@@ -4,9 +4,12 @@ import { AddLessonForm } from '@/components/AddLessonForm';
 import { LessonRow } from '@/components/LessonRow';
 import { ScheduleManager } from '@/components/ScheduleManager';
 import { ConfirmButton } from '@/components/ConfirmButton';
+import { EditStudentName } from '@/components/EditStudentName';
 import {
   addLesson,
   updateLessonFull,
+  deleteLesson,
+  updateStudentName,
   toggleHomework,
   togglePaid,
   addTopic,
@@ -95,6 +98,8 @@ export default async function StudentPage({ params, searchParams }) {
 
   const addLessonAction = addLesson.bind(null, studentId);
   const updateLessonFullAction = updateLessonFull.bind(null, studentId);
+  const deleteLessonAction = deleteLesson.bind(null, studentId);
+  const updateStudentNameAction = updateStudentName.bind(null, studentId);
   const toggleHomeworkAction = toggleHomework.bind(null, studentId);
   const togglePaymentAction = togglePaid.bind(null, studentId);
   const addTopicAction = addTopic.bind(null, studentId);
@@ -120,7 +125,7 @@ export default async function StudentPage({ params, searchParams }) {
   return (
     <div className="shell">
       <div className="masthead">
-        <h1>{student.full_name}</h1>
+        <EditStudentName name={student.full_name} action={updateStudentNameAction} />
         <div className="masthead-right">
           <div className="eyebrow eyebrow-right">{student.subject}</div>
           <a href="/dashboard" className="btn-secondary" style={{ textDecoration: 'none' }}>
@@ -196,6 +201,7 @@ export default async function StudentPage({ params, searchParams }) {
                     action={updateLessonFullAction}
                     toggleHomeworkAction={toggleHomeworkAction}
                     togglePaymentAction={togglePaymentAction}
+                    deleteLessonAction={deleteLessonAction}
                   />
                 );
               })}
